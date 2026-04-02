@@ -1,6 +1,9 @@
 import type { Span } from "braintrust";
 import OpenAI from "openai";
 
+import { getBraintrustProjectName, requireBraintrustProjectName } from "./braintrust/config.js";
+import { loadHelprRuntimeParameters } from "./braintrust/parameters.js";
+import { managedPromptSlugs } from "./braintrust/prompts.js";
 import { buildSupportTriageTags, createBraintrustOpenAIClient, withChildSpan } from "./braintrust/tracing.js";
 import { type PromptContext } from "./prompts.js";
 import { ticketInputSchema, type EscalationResult, type TicketInput, type TriageResult } from "./schemas.js";
@@ -9,17 +12,40 @@ import { collectContext } from "./workflow/collect-context.js";
 import { finalizeResult } from "./workflow/finalize-result.js";
 import { runPolicyReviewer } from "./workflow/policy-reviewer.js";
 import { runReplyWriter } from "./workflow/reply-writer.js";
-import { runTriageSpecialist } from "./workflow/triage-specialist.js";
+import {
+  type ManagedPromptRef,
+  runTriageSpecialist,
+  type StagePromptMode,
+} from "./workflow/triage-specialist.js";
+
+export type RuntimeMode = "local" | "managed";
 
 export type RunSupportTriageOptions = {
   client?: OpenAI;
   model?: string;
+  runtimeMode?: RuntimeMode;
   parentSpan?: Span | null;
+};
+
+type StageName = "triage_specialist" | "policy_reviewer" | "reply_writer";
+
+type StagePromptConfig = {
+  promptMode: StagePromptMode;
+  managedPrompt?: ManagedPromptRef;
+};
+
+type StagePromptConfigMap = Record<StageName, StagePromptConfig>;
+
+type RuntimeSettings = {
+  model: string;
 };
 
 export type SupportTriageRun = {
   input: TicketInput;
-  context: PromptContext;
+  context: PromptContext & {
+    runtime_mode: RuntimeMode;
+    stage_prompt_modes: Record<StageName, StagePromptMode>;
+  };
   stages: {
     triage_specialist: Awaited<ReturnType<typeof runTriageSpecialist>>;
     policy_reviewer: Awaited<ReturnType<typeof runPolicyReviewer>>;
@@ -41,6 +67,85 @@ function getModel(model?: string): string {
   return model ?? process.env.OPENAI_MODEL ?? "gpt-5-mini";
 }
 
+export function getRuntimeMode(runtimeMode?: RuntimeMode): RuntimeMode {
+  return runtimeMode ?? ((process.env.RUNTIME_MODE as RuntimeMode | undefined) ?? "local");
+}
+
+function buildManagedPromptRef(slug?: string): ManagedPromptRef | undefined {
+  const projectName = getBraintrustProjectName();
+
+  if (!slug || !projectName) {
+    return undefined;
+  }
+
+  return {
+    projectName,
+    slug,
+    apiKey: process.env.BRAINTRUST_API_KEY,
+  };
+}
+
+function buildStagePromptConfigs(runtimeMode: RuntimeMode): StagePromptConfigMap {
+  if (runtimeMode === "local") {
+    return {
+      triage_specialist: { promptMode: "local" },
+      policy_reviewer: { promptMode: "local" },
+      reply_writer: { promptMode: "local" },
+    };
+  }
+
+  requireBraintrustProjectName();
+
+  const triagePrompt = buildManagedPromptRef(managedPromptSlugs.triageSpecialist);
+  const policyPrompt = buildManagedPromptRef(managedPromptSlugs.policyReviewer);
+  const replyPrompt = buildManagedPromptRef(managedPromptSlugs.replyWriter);
+
+  if (!triagePrompt || !policyPrompt || !replyPrompt) {
+    throw new Error("Managed prompt slugs require BRAINTRUST_PROJECT when RUNTIME_MODE=managed.");
+  }
+
+  return {
+    triage_specialist: {
+      promptMode: "managed",
+      managedPrompt: triagePrompt,
+    },
+    policy_reviewer: {
+      promptMode: "managed",
+      managedPrompt: policyPrompt,
+    },
+    reply_writer: {
+      promptMode: "managed",
+      managedPrompt: replyPrompt,
+    },
+  };
+}
+
+function summarizeStagePromptModes(stagePromptConfigs: StagePromptConfigMap): Record<StageName, StagePromptMode> {
+  return {
+    triage_specialist: stagePromptConfigs.triage_specialist.promptMode,
+    policy_reviewer: stagePromptConfigs.policy_reviewer.promptMode,
+    reply_writer: stagePromptConfigs.reply_writer.promptMode,
+  };
+}
+
+async function resolveRuntimeSettings(
+  runtimeMode: RuntimeMode,
+  options: RunSupportTriageOptions,
+): Promise<RuntimeSettings> {
+  if (runtimeMode !== "managed") {
+    return {
+      model: getModel(options.model),
+    };
+  }
+
+  const projectName = requireBraintrustProjectName();
+  const parameters = await loadHelprRuntimeParameters(projectName, process.env.BRAINTRUST_API_KEY);
+
+  return {
+    model: options.model ?? parameters.model ?? getModel(),
+  };
+}
+
 export async function runSupportTriage(
   input: TicketInput,
   options: RunSupportTriageOptions = {},
@@ -54,7 +159,11 @@ export async function runSupportTriageDetailed(
 ): Promise<SupportTriageRun> {
   const parsedInput = ticketInputSchema.parse(input);
   const client = createClient(options.client);
-  const model = getModel(options.model);
+  const runtimeMode = getRuntimeMode(options.runtimeMode);
+  const stagePromptConfigs = buildStagePromptConfigs(runtimeMode);
+  const stagePromptModes = summarizeStagePromptModes(stagePromptConfigs);
+  const runtimeSettings = await resolveRuntimeSettings(runtimeMode, options);
+
   const context = await withChildSpan(
     options.parentSpan,
     {
@@ -64,10 +173,10 @@ export async function runSupportTriageDetailed(
         product_area: parsedInput.product_area ?? null,
       },
       metadata: {
-        runtime_mode: "local",
+        runtime_mode: runtimeMode,
         collection_mode: "local_tools",
       },
-      tags: buildSupportTriageTags("runtime_mode:local", "stage:collect-context"),
+      tags: buildSupportTriageTags(`runtime_mode:${runtimeMode}`, "stage:collect-context"),
     },
     async (stageSpan) =>
       collectContext({
@@ -81,11 +190,11 @@ export async function runSupportTriageDetailed(
                 type: "tool",
                 input: { query },
                 metadata: {
-                  runtime_mode: "local",
+                  runtime_mode: runtimeMode,
                   tool_mode: "local",
                 },
                 tags: buildSupportTriageTags(
-                  "runtime_mode:local",
+                  `runtime_mode:${runtimeMode}`,
                   "stage:collect-context",
                   "tool:search-help-center",
                 ),
@@ -102,11 +211,11 @@ export async function runSupportTriageDetailed(
                   account_id: accountId ?? null,
                 },
                 metadata: {
-                  runtime_mode: "local",
+                  runtime_mode: runtimeMode,
                   tool_mode: "local",
                 },
                 tags: buildSupportTriageTags(
-                  "runtime_mode:local",
+                  `runtime_mode:${runtimeMode}`,
                   "stage:collect-context",
                   "tool:lookup-recent-account-events",
                 ),
@@ -124,17 +233,22 @@ export async function runSupportTriageDetailed(
         product_area: parsedInput.product_area ?? null,
       },
       metadata: {
-        runtime_mode: "local",
-        prompt_mode: "local",
+        runtime_mode: runtimeMode,
+        prompt_mode: stagePromptModes.triage_specialist,
       },
-      tags: buildSupportTriageTags("runtime_mode:local", "stage:triage-specialist", "prompt_mode:local"),
+      tags: buildSupportTriageTags(
+        `runtime_mode:${runtimeMode}`,
+        "stage:triage-specialist",
+        `prompt_mode:${stagePromptModes.triage_specialist}`,
+      ),
     },
     async () =>
       runTriageSpecialist({
         client,
         input: parsedInput,
         evidence: context,
-        model,
+        model: runtimeSettings.model,
+        ...stagePromptConfigs.triage_specialist,
       }),
   );
   const reviewedDecision = await withChildSpan(
@@ -146,10 +260,14 @@ export async function runSupportTriageDetailed(
         severity: triageDraft.severity,
       },
       metadata: {
-        runtime_mode: "local",
-        prompt_mode: "local",
+        runtime_mode: runtimeMode,
+        prompt_mode: stagePromptModes.policy_reviewer,
       },
-      tags: buildSupportTriageTags("runtime_mode:local", "stage:policy-reviewer", "prompt_mode:local"),
+      tags: buildSupportTriageTags(
+        `runtime_mode:${runtimeMode}`,
+        "stage:policy-reviewer",
+        `prompt_mode:${stagePromptModes.policy_reviewer}`,
+      ),
     },
     async () =>
       runPolicyReviewer({
@@ -157,7 +275,8 @@ export async function runSupportTriageDetailed(
         input: parsedInput,
         evidence: context,
         draft: triageDraft,
-        model,
+        model: runtimeSettings.model,
+        ...stagePromptConfigs.policy_reviewer,
       }),
   );
   const reply = await withChildSpan(
@@ -169,17 +288,22 @@ export async function runSupportTriageDetailed(
         severity: reviewedDecision.severity,
       },
       metadata: {
-        runtime_mode: "local",
-        prompt_mode: "local",
+        runtime_mode: runtimeMode,
+        prompt_mode: stagePromptModes.reply_writer,
       },
-      tags: buildSupportTriageTags("runtime_mode:local", "stage:reply-writer", "prompt_mode:local"),
+      tags: buildSupportTriageTags(
+        `runtime_mode:${runtimeMode}`,
+        "stage:reply-writer",
+        `prompt_mode:${stagePromptModes.reply_writer}`,
+      ),
     },
     async () =>
       runReplyWriter({
         client,
         input: parsedInput,
         reviewedDecision,
-        model,
+        model: runtimeSettings.model,
+        ...stagePromptConfigs.reply_writer,
       }),
   );
   const finalized = await withChildSpan(
@@ -187,10 +311,10 @@ export async function runSupportTriageDetailed(
     {
       name: "finalize-result",
       metadata: {
-        runtime_mode: "local",
+        runtime_mode: runtimeMode,
         reviewer_action: reviewedDecision.reviewer_action,
       },
-      tags: buildSupportTriageTags("runtime_mode:local", "stage:finalize-result"),
+      tags: buildSupportTriageTags(`runtime_mode:${runtimeMode}`, "stage:finalize-result"),
     },
     async (stageSpan) =>
       finalizeResult({
@@ -205,11 +329,11 @@ export async function runSupportTriageDetailed(
                 type: "tool",
                 input: { reason },
                 metadata: {
-                  runtime_mode: "local",
+                  runtime_mode: runtimeMode,
                   tool_mode: "local",
                 },
                 tags: buildSupportTriageTags(
-                  "runtime_mode:local",
+                  `runtime_mode:${runtimeMode}`,
                   "stage:finalize-result",
                   "tool:create-escalation",
                 ),
@@ -222,7 +346,11 @@ export async function runSupportTriageDetailed(
 
   return {
     input: parsedInput,
-    context,
+    context: {
+      ...context,
+      runtime_mode: runtimeMode,
+      stage_prompt_modes: stagePromptModes,
+    },
     stages: {
       triage_specialist: triageDraft,
       policy_reviewer: reviewedDecision,

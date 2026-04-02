@@ -3,7 +3,7 @@ import "dotenv/config";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 
-import { runSupportTriageDetailed } from "../src/app.js";
+import { getRuntimeMode, runSupportTriageDetailed } from "../src/app.js";
 import {
   buildSupportTriageTags,
   buildTicketMetadata,
@@ -161,6 +161,7 @@ async function promptForTicketInput(reader: PromptReader): Promise<TicketInput> 
 async function main(): Promise<void> {
   const reader = createInterface({ input, output });
   const client = createBraintrustOpenAIClient();
+  const runtimeMode = getRuntimeMode();
 
   try {
     const ticketInput = await promptForTicketInput(reader);
@@ -170,11 +171,11 @@ async function main(): Promise<void> {
         input: ticketInput,
         metadata: buildTicketMetadata(ticketInput, {
           source: "manual_ticket_cli",
-          runtime_mode: "local",
+          runtime_mode: runtimeMode,
         }),
-        tags: buildSupportTriageTags("entrypoint:manual", "runtime_mode:local"),
+        tags: buildSupportTriageTags("entrypoint:manual", `runtime_mode:${runtimeMode}`),
       },
-      async (span) => runSupportTriageDetailed(ticketInput, { client, parentSpan: span }),
+      async (span) => runSupportTriageDetailed(ticketInput, { client, parentSpan: span, runtimeMode }),
     );
 
     console.log("");

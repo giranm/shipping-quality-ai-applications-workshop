@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { runSupportTriageDetailed } from "../src/app.js";
+import { getRuntimeMode, runSupportTriageDetailed } from "../src/app.js";
 import {
   buildSupportTriageTags,
   buildTicketMetadata,
@@ -26,6 +26,7 @@ const demoTickets: TicketInput[] = [
 
 async function main(): Promise<void> {
   const client = createBraintrustOpenAIClient();
+  const runtimeMode = getRuntimeMode();
 
   for (const input of demoTickets) {
     const run = await withTrace(
@@ -34,11 +35,11 @@ async function main(): Promise<void> {
         input,
         metadata: buildTicketMetadata(input, {
           source: "demo_script",
-          runtime_mode: "local",
+          runtime_mode: runtimeMode,
         }),
-        tags: buildSupportTriageTags("entrypoint:demo", "runtime_mode:local"),
+        tags: buildSupportTriageTags("entrypoint:demo", `runtime_mode:${runtimeMode}`),
       },
-      async (span) => runSupportTriageDetailed(input, { client, parentSpan: span }),
+      async (span) => runSupportTriageDetailed(input, { client, parentSpan: span, runtimeMode }),
     );
     console.log("Input:");
     console.log(JSON.stringify(run.input, null, 2));

@@ -3,7 +3,7 @@ import "dotenv/config";
 import { currentSpan, Eval } from "braintrust";
 import { fileURLToPath } from "node:url";
 
-import { runSupportTriage, runSupportTriageDetailed } from "../app.js";
+import { getRuntimeMode, runSupportTriage, runSupportTriageDetailed } from "../app.js";
 import type { TicketInput, TriageResult } from "../schemas.js";
 import { getBraintrustDatasetName, requireBraintrustProjectName } from "./config.js";
 import { type EvalExpected, type EvalRow, loadSeedEvalRows } from "./dataset.js";
@@ -78,11 +78,16 @@ function summarize(results: LocalEvalRowResult[]) {
 
 async function runLocalEvaluation(rows: EvalRow[]) {
   const client = createBraintrustOpenAIClient();
+  const runtimeMode = getRuntimeMode();
   const results: LocalEvalRowResult[] = [];
 
   for (const row of rows) {
     try {
-      const output = await runSupportTriage(row.input, { client, parentSpan: currentSpan() });
+      const output = await runSupportTriage(row.input, {
+        client,
+        parentSpan: currentSpan(),
+        runtimeMode,
+      });
       const scores = await scoreRow(row, output);
       results.push({
         input: row.input,
@@ -108,6 +113,7 @@ async function runLocalEvaluation(rows: EvalRow[]) {
 
 export async function runSeedEvaluation() {
   const rows = await loadSeedEvalRows();
+  const runtimeMode = getRuntimeMode();
 
   if (!isBraintrustEnabled()) {
     return {
@@ -126,13 +132,15 @@ export async function runSeedEvaluation() {
           await runSupportTriageDetailed(input, {
             client,
             parentSpan: currentSpan(),
+            runtimeMode,
           })
         ).result,
       scores: triageScorers,
-      experimentName: "helpr-seed-eval",
+      experimentName: `helpr-seed-eval-${runtimeMode}`,
       metadata: {
         dataset: getBraintrustDatasetName(),
         cases: rows.length,
+        runtime_mode: runtimeMode,
       },
     },
   );

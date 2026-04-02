@@ -11,6 +11,22 @@ export type PromptContext = {
   recent_account_events: RecentAccountEvent[];
 };
 
+function stringifyManagedPromptValue(value: unknown): string {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  return JSON.stringify(value, null, 2);
+}
+
 export function buildLocalTriageSpecialistSystemPrompt(): string {
   return [
     "You are Helpr's triage specialist for a B2B SaaS company.",
@@ -38,6 +54,50 @@ export function buildLocalTriageSpecialistUserPrompt(
     "",
     "Recent account events:",
     JSON.stringify(context.recent_account_events, null, 2),
+    "",
+    "Guidance:",
+    "- Keep escalation_reason empty when should_escalate is false.",
+    "- recommended_action should be concrete and operational.",
+    "- evidence_summary should mention the strongest signals in the ticket or context.",
+    "- Use the provided context when it is relevant, but do not invent facts that are not supported.",
+  ].join("\n");
+}
+
+export function buildManagedTriageSpecialistVariables(
+  input: TicketInput,
+  context: PromptContext,
+) {
+  return {
+    ticket: stringifyManagedPromptValue(input.ticket),
+    customer_tier: stringifyManagedPromptValue(input.customer_tier ?? ""),
+    account_id: stringifyManagedPromptValue(input.account_id ?? ""),
+    product_area: stringifyManagedPromptValue(input.product_area ?? ""),
+    help_center_results: stringifyManagedPromptValue(context.help_center_results),
+    recent_account_events: stringifyManagedPromptValue(context.recent_account_events),
+  };
+}
+
+export function buildManagedTriageSpecialistUserTemplate(): string {
+  return [
+    "Produce a structured triage draft for the following support request.",
+    "",
+    "Ticket:",
+    "{{{ticket}}}",
+    "",
+    "Customer tier:",
+    "{{{customer_tier}}}",
+    "",
+    "Account ID:",
+    "{{{account_id}}}",
+    "",
+    "Product area:",
+    "{{{product_area}}}",
+    "",
+    "Help center context:",
+    "{{{help_center_results}}}",
+    "",
+    "Recent account events:",
+    "{{{recent_account_events}}}",
     "",
     "Guidance:",
     "- Keep escalation_reason empty when should_escalate is false.",
@@ -83,6 +143,55 @@ export function buildLocalPolicyReviewerUserPrompt(
   ].join("\n");
 }
 
+export function buildManagedPolicyReviewerVariables(
+  input: TicketInput,
+  context: TriageEvidence,
+  draft: TriageSpecialistDraft,
+) {
+  return {
+    ticket: stringifyManagedPromptValue(input.ticket),
+    customer_tier: stringifyManagedPromptValue(input.customer_tier ?? ""),
+    account_id: stringifyManagedPromptValue(input.account_id ?? ""),
+    product_area: stringifyManagedPromptValue(input.product_area ?? ""),
+    help_center_results: stringifyManagedPromptValue(context.help_center_results),
+    recent_account_events: stringifyManagedPromptValue(context.recent_account_events),
+    specialist_draft: stringifyManagedPromptValue(draft),
+  };
+}
+
+export function buildManagedPolicyReviewerUserTemplate(): string {
+  return [
+    "Review the triage specialist draft and return the reviewed decision.",
+    "",
+    "Ticket:",
+    "{{{ticket}}}",
+    "",
+    "Customer tier:",
+    "{{{customer_tier}}}",
+    "",
+    "Account ID:",
+    "{{{account_id}}}",
+    "",
+    "Product area:",
+    "{{{product_area}}}",
+    "",
+    "Help center context:",
+    "{{{help_center_results}}}",
+    "",
+    "Recent account events:",
+    "{{{recent_account_events}}}",
+    "",
+    "Specialist draft:",
+    "{{{specialist_draft}}}",
+    "",
+    "Guidance:",
+    "- Set reviewer_action to approved when the draft is good as-is.",
+    "- Set reviewer_action to revised when you change any decision field.",
+    "- Keep recommended_action concise and practical.",
+    "- Keep review_notes short and specific.",
+  ].join("\n");
+}
+
 export function buildLocalReplyWriterSystemPrompt(): string {
   return [
     "You are Helpr's reply writer.",
@@ -105,6 +214,45 @@ export function buildLocalReplyWriterUserPrompt(
     "",
     "Reviewed decision:",
     JSON.stringify(reviewedDecision, null, 2),
+    "",
+    "Guidance:",
+    "- Keep the message concise.",
+    "- Mention escalation only when should_escalate is true.",
+    "- Ask for additional details only when they materially help the next step.",
+  ].join("\n");
+}
+
+export function buildManagedReplyWriterVariables(
+  input: TicketInput,
+  reviewedDecision: PolicyReviewerDecision,
+) {
+  return {
+    ticket: stringifyManagedPromptValue(input.ticket),
+    customer_tier: stringifyManagedPromptValue(input.customer_tier ?? ""),
+    account_id: stringifyManagedPromptValue(input.account_id ?? ""),
+    product_area: stringifyManagedPromptValue(input.product_area ?? ""),
+    reviewed_decision: stringifyManagedPromptValue(reviewedDecision),
+  };
+}
+
+export function buildManagedReplyWriterUserTemplate(): string {
+  return [
+    "Write the customer-facing reply for this reviewed decision.",
+    "",
+    "Ticket:",
+    "{{{ticket}}}",
+    "",
+    "Customer tier:",
+    "{{{customer_tier}}}",
+    "",
+    "Account ID:",
+    "{{{account_id}}}",
+    "",
+    "Product area:",
+    "{{{product_area}}}",
+    "",
+    "Reviewed decision:",
+    "{{{reviewed_decision}}}",
     "",
     "Guidance:",
     "- Keep the message concise.",
