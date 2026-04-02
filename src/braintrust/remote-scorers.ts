@@ -44,8 +44,21 @@ type RemoteScorerRegistration = {
   slug: string;
 };
 
+type RemoteScorerValue = {
+  metadata?: Record<string, unknown>;
+  score: number;
+};
+
 function getRemoteScorerRegistrations(): RemoteScorerRegistration[] {
   return buildRemoteScorerRegistrations();
+}
+
+function buildNamedScore(name: string, value: RemoteScorerValue): { name: string; score: number; metadata?: Record<string, unknown> } {
+  return {
+    name,
+    score: value.score,
+    ...(value.metadata ? { metadata: value.metadata } : {}),
+  };
 }
 
 export const remoteScorerSlugs = {
@@ -182,70 +195,79 @@ function buildRemoteScorerRegistrations(): RemoteScorerRegistration[] {
       remoteScorerSlugs.categoryExact,
       "Exact-match scorer for category labels when expected values are present.",
       false,
-      ({ output, expected }: RemoteScorerArgs) => scoreCategoryExact({ output, expected }).score,
+      ({ output, expected }: RemoteScorerArgs) =>
+        buildNamedScore("category_exact", scoreCategoryExact({ output, expected })),
     ),
     codeScorer(
       "Helpr Severity Exact",
       remoteScorerSlugs.severityExact,
       "Exact-match scorer for severity labels when expected values are present.",
       false,
-      ({ output, expected }: RemoteScorerArgs) => scoreSeverityExact({ output, expected }).score,
+      ({ output, expected }: RemoteScorerArgs) =>
+        buildNamedScore("severity_exact", scoreSeverityExact({ output, expected })),
     ),
     codeScorer(
       "Helpr Escalation Exact",
       remoteScorerSlugs.escalationExact,
       "Exact-match scorer for escalation decisions when expected values are present.",
       false,
-      ({ output, expected }: RemoteScorerArgs) => scoreEscalationExact({ output, expected }).score,
+      ({ output, expected }: RemoteScorerArgs) =>
+        buildNamedScore("escalation_exact", scoreEscalationExact({ output, expected })),
     ),
     codeScorer(
       "Helpr Schema Valid",
       remoteScorerSlugs.schemaValid,
       "Checks whether the final triage result is structurally valid.",
       true,
-      ({ output }: RemoteScorerArgs) => scoreSchemaValidity({ output }).score,
+      ({ output }: RemoteScorerArgs) => buildNamedScore("schema_valid", scoreSchemaValidity({ output })),
     ),
     codeScorer(
       "Helpr Required Fields Present",
       remoteScorerSlugs.requiredFieldsPresent,
       "Checks whether required result fields are present and non-empty.",
       true,
-      ({ output }: RemoteScorerArgs) => scoreRequiredFieldsPresent({ output }).score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("required_fields_present", scoreRequiredFieldsPresent({ output })),
     ),
     codeScorer(
       "Helpr Escalation Reason Present",
       remoteScorerSlugs.escalationReasonPresent,
       "Checks whether escalated outcomes include an escalation reason.",
       true,
-      ({ output }: RemoteScorerArgs) => scoreEscalationReasonPresent({ output }).score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("escalation_reason_present", scoreEscalationReasonPresent({ output })),
     ),
     codeScorer(
       "Helpr Enterprise Blocked Not Low",
       remoteScorerSlugs.enterpriseBlockedNotLow,
       "Flags low severity on obviously blocked enterprise issues.",
       true,
-      ({ input, output }: RemoteScorerArgs) => scoreEnterpriseBlockedNotLow({ input, output }).score,
+      ({ input, output }: RemoteScorerArgs) =>
+        buildNamedScore("enterprise_blocked_not_low", scoreEnterpriseBlockedNotLow({ input, output })),
     ),
     codeScorer(
       "Helpr Confidence In Range",
       remoteScorerSlugs.confidenceInRange,
       "Checks whether confidence remains between 0 and 1.",
       true,
-      ({ output }: RemoteScorerArgs) => scoreConfidenceInRange({ output }).score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("confidence_in_range", scoreConfidenceInRange({ output })),
     ),
     codeScorer(
       "Helpr Reviewer Override Guardrail",
       remoteScorerSlugs.reviewerOverrideGuardrail,
       "Eval-only guardrail for cases where reviewer override is expected.",
       false,
-      ({ output, metadata }: RemoteScorerArgs) => scoreReviewerOverrideGuardrail({ output, metadata }).score,
+      ({ output, metadata }: RemoteScorerArgs) =>
+        buildNamedScore("reviewer_override_guardrail", scoreReviewerOverrideGuardrail({ output, metadata })),
     ),
     codeScorer(
       "Helpr Conflicting Signals Actionable",
       remoteScorerSlugs.conflictingSignalsActionable,
       "Eval-only guardrail for cases with conflicting evidence.",
       false,
-      ({ output, metadata }: RemoteScorerArgs) => scoreConflictingSignalsActionable({ output, metadata }).score,
+      ({ output, metadata }: RemoteScorerArgs) =>
+        buildNamedScore("conflicting_signals_actionable", scoreConflictingSignalsActionable({ output, metadata })),
     ),
     codeScorer(
       "Helpr Low Context Confidence Cap",
@@ -253,49 +275,55 @@ function buildRemoteScorerRegistrations(): RemoteScorerRegistration[] {
       "Checks that vague or low-context tickets do not receive overconfident scores.",
       true,
       ({ input, output, metadata }: RemoteScorerArgs) =>
-        scoreLowContextConfidenceCap({ input, output, metadata }).score,
+        buildNamedScore("low_context_confidence_cap", scoreLowContextConfidenceCap({ input, output, metadata })),
     ),
     codeScorer(
       "Helpr Reply Empathy",
       remoteScorerSlugs.replyEmpathy,
       "Heuristic reply empathy scorer.",
       false,
-      ({ output }: RemoteScorerArgs) => scoreReplyRubric({ output }).reply_empathy.score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("reply_empathy", scoreReplyRubric({ output }).reply_empathy),
     ),
     codeScorer(
       "Helpr Reply Actionability",
       remoteScorerSlugs.replyActionability,
       "Heuristic reply actionability scorer.",
       false,
-      ({ output }: RemoteScorerArgs) => scoreReplyRubric({ output }).reply_actionability.score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("reply_actionability", scoreReplyRubric({ output }).reply_actionability),
     ),
     codeScorer(
       "Helpr Reply Avoid Overpromising",
       remoteScorerSlugs.replyAvoidOverpromising,
       "Heuristic reply overpromising guardrail.",
       false,
-      ({ output }: RemoteScorerArgs) => scoreReplyRubric({ output }).reply_avoid_overpromising.score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("reply_avoid_overpromising", scoreReplyRubric({ output }).reply_avoid_overpromising),
     ),
     codeScorer(
       "Helpr Reply Correctness",
       remoteScorerSlugs.replyCorrectness,
       "Heuristic reply correctness scorer.",
       false,
-      ({ output }: RemoteScorerArgs) => scoreReplyRubric({ output }).reply_correctness.score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("reply_correctness", scoreReplyRubric({ output }).reply_correctness),
     ),
     codeScorer(
       "Helpr Customer Reply Rubric",
       remoteScorerSlugs.customerReplyRubric,
       "Composite heuristic scorer for support reply quality.",
       true,
-      ({ output }: RemoteScorerArgs) => scoreReplyRubric({ output }).customer_reply_rubric.score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("customer_reply_rubric", scoreReplyRubric({ output }).customer_reply_rubric),
     ),
     codeScorer(
       "Helpr Stage Output Present",
       remoteScorerSlugs.stageOutputPresent,
       "Checks whether specialist stage spans emitted a structured output.",
       true,
-      ({ output }: RemoteScorerArgs) => scoreStageOutputPresent({ output }).score,
+      ({ output }: RemoteScorerArgs) =>
+        buildNamedScore("stage_output_present", scoreStageOutputPresent({ output })),
     ),
     llmScorer(
       "Helpr Root Triage Quality Judge",
