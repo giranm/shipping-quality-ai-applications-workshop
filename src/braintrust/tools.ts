@@ -1,4 +1,4 @@
-import { invoke, projects, type Span } from "braintrust";
+import { currentSpan, invoke, projects, type Span } from "braintrust";
 import { spawn } from "node:child_process";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, parse } from "node:path";
@@ -93,6 +93,14 @@ export type InvokeManagedToolArgs = {
   slug: ManagedToolSlug;
 };
 
+function logToolSpanMetadata(data: Record<string, unknown>): void {
+  try {
+    currentSpan()?.log({ metadata: data });
+  } catch {
+    // Best-effort enrichment; tool execution should continue even if metadata logging fails.
+  }
+}
+
 function getManagedToolRegistrations(): ManagedToolRegistration[] {
   return [
     {
@@ -107,7 +115,17 @@ function getManagedToolRegistrations(): ManagedToolRegistration[] {
           ifExists,
           parameters: searchHelpCenterParametersSchema,
           returns: helpCenterResultsSchema,
-          handler: ({ query }) => searchHelpCenter(query),
+          handler: ({ query }) => {
+            const result = searchHelpCenter(query);
+            logToolSpanMetadata({
+              component: "helpr",
+              object_role: "tool_span",
+              tool_slug: managedToolSlugs.searchHelpCenter,
+              query_length: query.length,
+              result_count: result.length,
+            });
+            return result;
+          },
         });
       },
     },
@@ -123,7 +141,17 @@ function getManagedToolRegistrations(): ManagedToolRegistration[] {
           ifExists,
           parameters: lookupRecentAccountEventsParametersSchema,
           returns: recentAccountEventsSchema,
-          handler: ({ account_id }) => lookupRecentAccountEvents(account_id),
+          handler: ({ account_id }) => {
+            const result = lookupRecentAccountEvents(account_id);
+            logToolSpanMetadata({
+              component: "helpr",
+              object_role: "tool_span",
+              tool_slug: managedToolSlugs.lookupRecentAccountEvents,
+              has_account_id: Boolean(account_id),
+              result_count: result.length,
+            });
+            return result;
+          },
         });
       },
     },
@@ -139,7 +167,18 @@ function getManagedToolRegistrations(): ManagedToolRegistration[] {
           ifExists,
           parameters: createEscalationParametersSchema,
           returns: escalationResultReturnSchema,
-          handler: ({ reason }) => createEscalation(reason),
+          handler: ({ reason }) => {
+            const result = createEscalation(reason);
+            logToolSpanMetadata({
+              component: "helpr",
+              object_role: "tool_span",
+              tool_slug: managedToolSlugs.createEscalation,
+              reason_length: reason.length,
+              queue: result.queue,
+              eta_minutes: result.eta_minutes,
+            });
+            return result;
+          },
         });
       },
     },
