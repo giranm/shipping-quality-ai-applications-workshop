@@ -32,39 +32,7 @@ If you want to use Braintrust-managed prompts, remote scorers, and online scorin
 make setup-braintrust
 ```
 
-<<<<<<< HEAD
 Recommended baseline for local verification:
-=======
-## Target architecture
-
-This workshop builds toward a bounded staged agent for support triage.
-Early checkpoints only implement part of this flow; later checkpoints fill in the full path.
-
-```mermaid
-flowchart LR
-    A[Ticket input] --> B[collect-context]
-    B --> C[triage-specialist]
-    C --> D[policy-reviewer]
-    D --> E[reply-writer]
-    E --> F[finalize-result]
-    F --> G{should escalate?}
-    G -->|yes| H[create-escalation]
-    G -->|no| I[final result]
-    H --> I
-
-    J[Braintrust] -. prompts, tools, traces, evals, online scoring .-> C
-    J -. operational layer .-> D
-    J -. operational layer .-> E
-```
-
-The intended mental model is:
-
-- deterministic context and business logic stay explicit
-- model stages make bounded decisions rather than running an open-ended agent loop
-- Braintrust becomes the operational layer around prompts, tools, traces, evals, and live scoring
-
-## Next checkpoint
->>>>>>> f6f9400 (docs: add target architecture overview to workshop readmes)
 
 ```bash
 RUNTIME_MODE=local make demo
@@ -279,11 +247,17 @@ Keep this command explicit rather than folding it into `make setup`. It has remo
 - `09-prod-failure-and-remediation` (canonical alias to `09b-remediation`)
 - `10-final`
 
-Workshop refs:
+Publication strategy:
 
-- each checkpoint is published as a tag
-- matching `workshop/*` branches exist for diffing between stages
-- `09-prod-failure-and-remediation` points at the same commit as `09b-remediation`
+- `main` is the latest integrated state.
+- `feat/*` branches are internal implementation branches.
+- attendee-facing checkpoints should be published from a separate curated workshop history, ideally built on an orphan branch after `main` is frozen.
+- publish those curated checkpoints as runnable tags and matching `workshop/*` branches.
+- those checkpoint refs do not need to map one-to-one to the raw merge history; the workshop narrative is allowed to be cleaner than the development history.
+- after publishing the checkpoint tags/branches, internal `feat/*` branches and temporary worktrees can be archived or deleted.
+
+See [docs/workshop-freeze-manifest.md](/Users/giran.moodley/dev/workshop-shipping-complex-ai-apps-with-braintrust/docs/workshop-freeze-manifest.md) for the expected Braintrust object slugs, validation state, and public freeze assumptions that go with the frozen workshop state.
+See [docs/workshop-publication-plan.md](/Users/giran.moodley/dev/workshop-shipping-complex-ai-apps-with-braintrust/docs/workshop-publication-plan.md) for the plan to turn the frozen `main` branch into a curated attendee-facing checkpoint path.
 
 Important checkpoint notes:
 
