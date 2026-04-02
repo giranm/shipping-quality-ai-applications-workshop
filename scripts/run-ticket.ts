@@ -5,6 +5,11 @@ import { stdin as input, stdout as output } from "node:process";
 
 import { runSupportTriageDetailed } from "../src/app.js";
 import {
+  buildTicketMetadata,
+  createBraintrustOpenAIClient,
+  withTrace,
+} from "../src/braintrust/tracing.js";
+import {
   customerTierSchema,
   productAreaSchema,
   ticketInputSchema,
@@ -154,10 +159,18 @@ async function promptForTicketInput(reader: PromptReader): Promise<TicketInput> 
 
 async function main(): Promise<void> {
   const reader = createInterface({ input, output });
+  const client = createBraintrustOpenAIClient();
 
   try {
     const ticketInput = await promptForTicketInput(reader);
-    const run = await runSupportTriageDetailed(ticketInput);
+    const run = await withTrace(
+      {
+        name: "support-triage-manual",
+        input: ticketInput,
+        metadata: buildTicketMetadata(ticketInput, { source: "manual_ticket_cli" }),
+      },
+      async (span) => runSupportTriageDetailed(ticketInput, { client, parentSpan: span }),
+    );
 
     console.log("");
     console.log("Input:");

@@ -1,8 +1,8 @@
 # Shipping Complex AI Applications with Braintrust
 
-Checkpoint: `03-specialist-stages`
+Checkpoint: `04-add-tracing`
 
-This branch refactors Helpr into a staged workflow. Context collection, triage drafting, policy review, reply writing, and deterministic finalization are now explicit, and the finalization stage is responsible for creating the escalation record when required.
+This branch adds Braintrust tracing around the staged workflow. Root runs, workflow stages, local retrieval tools, and deterministic escalation creation now appear as nested spans so the agent flow is inspectable in the Braintrust UI.
 
 ## What exists here
 
@@ -10,13 +10,13 @@ This branch refactors Helpr into a staged workflow. Context collection, triage d
 - local account-event lookup in `src/tools.ts`
 - deterministic escalation creation in `src/tools.ts`
 - explicit workflow stages under `src/workflow/`
-- app orchestration in `src/app.ts`
-- demo and ticket scripts that show context, stage outputs, and escalation
+- Braintrust tracing helpers in `src/braintrust/tracing.ts`
+- traced app orchestration in `src/app.ts`
+- demo and ticket scripts that create root traces and show context, stage outputs, and escalation
 
 ## What is intentionally missing
 
-- no staged specialist workflow
-- no Braintrust tracing, datasets, evals, or managed objects
+- no datasets, evals, managed prompts, managed tools, or online scoring
 
 ## Run
 
@@ -30,14 +30,16 @@ make ticket
 
 ```ts
 runSupportTriage(input) {
-  context = collectContext(input);
-  draft = runTriageSpecialist(input, context);
-  reviewed = runPolicyReviewer(input, context, draft);
-  reply = runReplyWriter(input, reviewed);
-  return finalizeResult(reviewed, reply);
+  return withTrace("support-triage", input, async (rootSpan) => {
+    context = withChildSpan(rootSpan, "collect-context", () => collectContext(input));
+    draft = withChildSpan(rootSpan, "triage-specialist", () => runTriageSpecialist(input, context));
+    reviewed = withChildSpan(rootSpan, "policy-reviewer", () => runPolicyReviewer(input, context, draft));
+    reply = withChildSpan(rootSpan, "reply-writer", () => runReplyWriter(input, reviewed));
+    return withChildSpan(rootSpan, "finalize-result", () => finalizeResult(reviewed, reply));
+  });
 }
 ```
 
 ## Next checkpoint
 
-Move to `04-add-tracing` to make the staged execution path visible in Braintrust.
+Move to `05-add-dataset-and-evals` to start scoring complete ticket runs against seeded examples.

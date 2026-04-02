@@ -11,6 +11,7 @@
     "ticket": "node --import=tsx scripts/run-ticket.ts"
   },
   "dependencies": {
+    "braintrust": "^3.4.0",
     "dotenv": "^17.3.1",
     "openai": "^6.32.0",
     "zod": "^4.3.6"

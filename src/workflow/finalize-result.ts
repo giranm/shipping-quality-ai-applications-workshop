@@ -10,9 +10,14 @@ import {
 } from "../schemas.js";
 import { createEscalation } from "../tools.js";
 
+type MaybePromise<T> = T | Promise<T>;
+
 export type FinalizeResultArgs = {
   reviewedDecision: PolicyReviewerDecision;
   reply: ReplyWriterOutput;
+  dependencies?: {
+    createEscalation?: (reason: string) => MaybePromise<EscalationResult>;
+  };
 };
 
 export type FinalizedSupportTriage = {
@@ -20,9 +25,10 @@ export type FinalizedSupportTriage = {
   result: TriageResult;
 };
 
-export function finalizeResult(args: FinalizeResultArgs): FinalizedSupportTriage {
+export async function finalizeResult(args: FinalizeResultArgs): Promise<FinalizedSupportTriage> {
   const reviewedDecision = policyReviewerDecisionSchema.parse(args.reviewedDecision);
   const reply = replyWriterOutputSchema.parse(args.reply);
+  const createEscalationRecord = args.dependencies?.createEscalation ?? createEscalation;
   const escalationReason = reviewedDecision.should_escalate
     ? reviewedDecision.escalation_reason.trim() || reviewedDecision.recommended_action.trim()
     : "";
@@ -39,7 +45,7 @@ export function finalizeResult(args: FinalizeResultArgs): FinalizedSupportTriage
 
   return {
     escalation: result.should_escalate
-      ? escalationResultSchema.parse(createEscalation(result.escalation_reason))
+      ? escalationResultSchema.parse(await Promise.resolve(createEscalationRecord(result.escalation_reason)))
       : null,
     result,
   };

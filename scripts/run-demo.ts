@@ -1,6 +1,11 @@
 import "dotenv/config";
 
 import { runSupportTriageDetailed } from "../src/app.js";
+import {
+  buildTicketMetadata,
+  createBraintrustOpenAIClient,
+  withTrace,
+} from "../src/braintrust/tracing.js";
 import { type TicketInput } from "../src/schemas.js";
 
 const demoTickets: TicketInput[] = [
@@ -19,8 +24,17 @@ const demoTickets: TicketInput[] = [
 ];
 
 async function main(): Promise<void> {
+  const client = createBraintrustOpenAIClient();
+
   for (const input of demoTickets) {
-    const run = await runSupportTriageDetailed(input);
+    const run = await withTrace(
+      {
+        name: "support-triage-demo",
+        input,
+        metadata: buildTicketMetadata(input, { source: "demo_script" }),
+      },
+      async (span) => runSupportTriageDetailed(input, { client, parentSpan: span }),
+    );
     console.log("Input:");
     console.log(JSON.stringify(run.input, null, 2));
     console.log("Context:");
