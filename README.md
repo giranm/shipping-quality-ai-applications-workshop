@@ -33,9 +33,15 @@ make eval
 make ticket
 ```
 
-If you only set `OPENAI_API_KEY`, the commands still run and print local output.
+`make demo` and `make ticket` still work with only `OPENAI_API_KEY`.
 
-If you also set `BRAINTRUST_API_KEY` and `BRAINTRUST_PROJECT`, the same commands emit root, stage, and tool traces to Braintrust so you can inspect the workflow in the UI.
+If you also set `BRAINTRUST_API_KEY` and `BRAINTRUST_PROJECT`:
+- `make demo` and `make ticket` emit root, stage, and tool traces to Braintrust
+- `make seed-dataset` uploads `Helpr Seed Dataset`
+- `make eval` logs a Braintrust experiment for the full staged run
+
+Without Braintrust configured:
+- `make eval` falls back to a local score summary instead of creating a remote experiment
 
 ## Pseudocode
 
