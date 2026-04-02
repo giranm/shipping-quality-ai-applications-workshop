@@ -3,6 +3,7 @@ import "dotenv/config";
 import type { BraintrustIfExists } from "../src/braintrust/api.js";
 import { defaultRuntimeModel, setupBraintrustParameters } from "../src/braintrust/parameters.js";
 import { setupBraintrustPrompts } from "../src/braintrust/prompts.js";
+import { setupBraintrustTools } from "../src/braintrust/tools.js";
 
 function parseIfExists(argv: string[]): BraintrustIfExists | undefined {
   if (argv.includes("--replace")) {
@@ -68,15 +69,26 @@ const promptResult = await setupBraintrustPrompts(
     onLog: (line) => console.log(line),
   },
 );
+const toolResult = await setupBraintrustTools(
+  {
+    projectName,
+    ifExists,
+  },
+  {
+    dryRun,
+    onLog: (line) => console.log(line),
+  },
+);
 
 console.log(`Preflight: using managed runtime model "${runtimeParameters.model}" for prompt publication.`);
 console.log(
-  `${dryRun ? "Planned" : "Bootstrapped"} Braintrust project ${promptResult.projectName} with ${promptResult.prompts.length} prompt(s) and 1 parameter object(s).`,
+  `${dryRun ? "Planned" : "Bootstrapped"} Braintrust project ${promptResult.projectName} with ${promptResult.prompts.length} prompt(s), ${toolResult.tools.length} tool(s), and 1 parameter object(s).`,
 );
 console.log(
   JSON.stringify(
     {
       prompts: promptResult,
+      tools: toolResult,
       parameters: parametersResult,
     },
     null,

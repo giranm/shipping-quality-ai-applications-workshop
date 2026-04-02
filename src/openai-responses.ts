@@ -1,7 +1,11 @@
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions/completions";
-import type { ResponseInputItem } from "openai/resources/responses/responses";
+import type {
+  ChatCompletionFunctionTool,
+  ChatCompletionMessageParam,
+  ChatCompletionTool,
+} from "openai/resources/chat/completions/completions";
+import type { FunctionTool, ResponseInputItem } from "openai/resources/responses/responses";
 import { z } from "zod";
 
 type StructuredResponseArgs<Schema extends z.ZodTypeAny> = {
@@ -52,6 +56,24 @@ export function chatMessagesToResponseInput(messages: ChatCompletionMessageParam
           text,
         },
       ],
+    };
+  });
+}
+
+export function chatToolsToResponseTools(tools: ChatCompletionTool[]): FunctionTool[] {
+  return tools.map((tool) => {
+    if (tool.type !== "function") {
+      throw new Error(`Unsupported chat tool type ${tool.type}.`);
+    }
+
+    const functionTool = tool as ChatCompletionFunctionTool;
+
+    return {
+      type: "function",
+      name: functionTool.function.name,
+      description: functionTool.function.description,
+      parameters: functionTool.function.parameters ?? null,
+      strict: functionTool.function.strict ?? true,
     };
   });
 }

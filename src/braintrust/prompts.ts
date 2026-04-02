@@ -1,6 +1,7 @@
 import { projects } from "braintrust";
 
 import { ensureBraintrustProject, type BraintrustIfExists } from "./api.js";
+import { buildManagedPromptToolDefinitions } from "./tools.js";
 import {
   buildLocalPolicyReviewerSystemPrompt,
   buildLocalReplyWriterSystemPrompt,
@@ -27,6 +28,7 @@ type PromptSpec = {
   slug: string;
   description: string;
   messages: { role: "system" | "user"; content: string }[];
+  tools?: ReturnType<typeof buildManagedPromptToolDefinitions>;
 };
 
 export type BraintrustPromptBootstrapResult = {
@@ -58,6 +60,7 @@ function buildPromptSpecs(): PromptSpec[] {
           content: buildManagedTriageSpecialistUserTemplate(),
         },
       ],
+      tools: buildManagedPromptToolDefinitions(),
     },
     {
       name: "Helpr Policy Reviewer",
@@ -129,6 +132,7 @@ export async function setupBraintrustPrompts(
       slug: prompt.slug,
       description: prompt.description,
       messages: prompt.messages,
+      ...(prompt.tools ? { tools: prompt.tools } : {}),
       ifExists,
       model,
     });

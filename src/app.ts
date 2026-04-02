@@ -2,6 +2,11 @@ import type { Span } from "braintrust";
 import OpenAI from "openai";
 
 import { getBraintrustProjectName, requireBraintrustProjectName } from "./braintrust/config.js";
+import {
+  invokeManagedCreateEscalation,
+  invokeManagedLookupRecentAccountEvents,
+  invokeManagedSearchHelpCenter,
+} from "./braintrust/tools.js";
 import { loadHelprRuntimeParameters } from "./braintrust/parameters.js";
 import { managedPromptSlugs } from "./braintrust/prompts.js";
 import { buildSupportTriageTags, createBraintrustOpenAIClient, withChildSpan } from "./braintrust/tracing.js";
@@ -47,7 +52,7 @@ export type SupportTriageRun = {
     stage_prompt_modes: Record<StageName, StagePromptMode>;
   };
   stages: {
-    triage_specialist: Awaited<ReturnType<typeof runTriageSpecialist>>;
+    triage_specialist: Awaited<ReturnType<typeof runTriageSpecialist>>["draft"];
     policy_reviewer: Awaited<ReturnType<typeof runPolicyReviewer>>;
     reply_writer: Awaited<ReturnType<typeof runReplyWriter>>;
   };
@@ -146,31 +151,85 @@ async function resolveRuntimeSettings(
   };
 }
 
-export async function runSupportTriage(
+async function runCollectContextStage(
   input: TicketInput,
-  options: RunSupportTriageOptions = {},
-): Promise<TriageResult> {
-  return (await runSupportTriageDetailed(input, options)).result;
-}
+  runtimeMode: RuntimeMode,
+  parentSpan?: Span | null,
+): Promise<PromptContext> {
+  if (runtimeMode === "managed") {
+    const projectName = requireBraintrustProjectName();
+    return withChildSpan(
+      parentSpan,
+      {
+        name: "collect-context",
+        input: {
+          account_id: input.account_id ?? null,
+          product_area: input.product_area ?? null,
+        },
+        metadata: {
+          runtime_mode: runtimeMode,
+          collection_mode: "managed_tools",
+        },
+        tags: buildSupportTriageTags(`runtime_mode:${runtimeMode}`, "stage:collect-context"),
+      },
+      async (stageSpan) => ({
+        help_center_results: await withChildSpan(
+          stageSpan,
+          {
+            name: "search-help-center",
+            type: "tool",
+            input: {
+              query: [input.product_area, input.ticket].filter(Boolean).join(": "),
+            },
+            metadata: {
+              runtime_mode: runtimeMode,
+              tool_mode: "managed",
+            },
+            tags: buildSupportTriageTags(
+              `runtime_mode:${runtimeMode}`,
+              "stage:collect-context",
+              "tool:search-help-center",
+            ),
+          },
+          async (toolSpan) =>
+            invokeManagedSearchHelpCenter(
+              projectName,
+              [input.product_area, input.ticket].filter(Boolean).join(": "),
+              toolSpan,
+            ),
+        ),
+        recent_account_events: await withChildSpan(
+          stageSpan,
+          {
+            name: "lookup-recent-account-events",
+            type: "tool",
+            input: {
+              account_id: input.account_id ?? null,
+            },
+            metadata: {
+              runtime_mode: runtimeMode,
+              tool_mode: "managed",
+            },
+            tags: buildSupportTriageTags(
+              `runtime_mode:${runtimeMode}`,
+              "stage:collect-context",
+              "tool:lookup-recent-account-events",
+            ),
+          },
+          async (toolSpan) =>
+            invokeManagedLookupRecentAccountEvents(projectName, input.account_id, toolSpan),
+        ),
+      }),
+    );
+  }
 
-export async function runSupportTriageDetailed(
-  input: TicketInput,
-  options: RunSupportTriageOptions = {},
-): Promise<SupportTriageRun> {
-  const parsedInput = ticketInputSchema.parse(input);
-  const client = createClient(options.client);
-  const runtimeMode = getRuntimeMode(options.runtimeMode);
-  const stagePromptConfigs = buildStagePromptConfigs(runtimeMode);
-  const stagePromptModes = summarizeStagePromptModes(stagePromptConfigs);
-  const runtimeSettings = await resolveRuntimeSettings(runtimeMode, options);
-
-  const context = await withChildSpan(
-    options.parentSpan,
+  return withChildSpan(
+    parentSpan,
     {
       name: "collect-context",
       input: {
-        account_id: parsedInput.account_id ?? null,
-        product_area: parsedInput.product_area ?? null,
+        account_id: input.account_id ?? null,
+        product_area: input.product_area ?? null,
       },
       metadata: {
         runtime_mode: runtimeMode,
@@ -180,7 +239,7 @@ export async function runSupportTriageDetailed(
     },
     async (stageSpan) =>
       collectContext({
-        input: parsedInput,
+        input,
         dependencies: {
           searchHelpCenter: async (query) =>
             withChildSpan(
@@ -225,6 +284,26 @@ export async function runSupportTriageDetailed(
         },
       }),
   );
+}
+
+export async function runSupportTriage(
+  input: TicketInput,
+  options: RunSupportTriageOptions = {},
+): Promise<TriageResult> {
+  return (await runSupportTriageDetailed(input, options)).result;
+}
+
+export async function runSupportTriageDetailed(
+  input: TicketInput,
+  options: RunSupportTriageOptions = {},
+): Promise<SupportTriageRun> {
+  const parsedInput = ticketInputSchema.parse(input);
+  const client = createClient(options.client);
+  const runtimeMode = getRuntimeMode(options.runtimeMode);
+  const stagePromptConfigs = buildStagePromptConfigs(runtimeMode);
+  const stagePromptModes = summarizeStagePromptModes(stagePromptConfigs);
+  const runtimeSettings = await resolveRuntimeSettings(runtimeMode, options);
+  const context = await runCollectContextStage(parsedInput, runtimeMode, options.parentSpan);
   const triageDraft = await withChildSpan(
     options.parentSpan,
     {
@@ -248,16 +327,23 @@ export async function runSupportTriageDetailed(
         input: parsedInput,
         evidence: context,
         model: runtimeSettings.model,
+        parentSpan: options.parentSpan,
         ...stagePromptConfigs.triage_specialist,
       }),
   );
+  const effectiveEvidence =
+    runtimeMode === "managed" &&
+    (triageDraft.collectedEvidence.help_center_results.length > 0 ||
+      triageDraft.collectedEvidence.recent_account_events.length > 0)
+      ? triageDraft.collectedEvidence
+      : context;
   const reviewedDecision = await withChildSpan(
     options.parentSpan,
     {
       name: "policy-reviewer",
       input: {
-        should_escalate: triageDraft.should_escalate,
-        severity: triageDraft.severity,
+        should_escalate: triageDraft.draft.should_escalate,
+        severity: triageDraft.draft.severity,
       },
       metadata: {
         runtime_mode: runtimeMode,
@@ -273,8 +359,8 @@ export async function runSupportTriageDetailed(
       runPolicyReviewer({
         client,
         input: parsedInput,
-        evidence: context,
-        draft: triageDraft,
+        evidence: effectiveEvidence,
+        draft: triageDraft.draft,
         model: runtimeSettings.model,
         ...stagePromptConfigs.policy_reviewer,
       }),
@@ -338,7 +424,10 @@ export async function runSupportTriageDetailed(
                   "tool:create-escalation",
                 ),
               },
-              async () => createEscalation(reason),
+              async () =>
+                runtimeMode === "managed"
+                  ? invokeManagedCreateEscalation(requireBraintrustProjectName(), reason, stageSpan)
+                  : createEscalation(reason),
             ),
         },
       }),
@@ -347,12 +436,12 @@ export async function runSupportTriageDetailed(
   return {
     input: parsedInput,
     context: {
-      ...context,
+      ...effectiveEvidence,
       runtime_mode: runtimeMode,
       stage_prompt_modes: stagePromptModes,
     },
     stages: {
-      triage_specialist: triageDraft,
+      triage_specialist: triageDraft.draft,
       policy_reviewer: reviewedDecision,
       reply_writer: reply,
     },

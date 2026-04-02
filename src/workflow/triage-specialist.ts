@@ -1,4 +1,5 @@
 import { loadPrompt } from "braintrust";
+import type { Span } from "braintrust";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions/completions";
 
@@ -15,6 +16,7 @@ import {
   buildLocalTriageSpecialistUserPrompt,
   buildManagedTriageSpecialistVariables,
 } from "../prompts.js";
+import { runManagedTriageToolLoop } from "../braintrust/managed-tools.js";
 import { parseStructuredResponse } from "../openai-responses.js";
 
 export type StagePromptMode = "local" | "managed";
@@ -29,17 +31,28 @@ export type RunTriageSpecialistArgs = {
   client: OpenAI;
   input: TicketInput;
   evidence: TriageEvidence;
-  model: string;
+  model?: string;
+  parentSpan?: Span | null;
   promptMode?: StagePromptMode;
   managedPrompt?: ManagedPromptRef;
 };
 
+export type RunTriageSpecialistResult = {
+  collectedEvidence: TriageEvidence;
+  draft: TriageSpecialistDraft;
+};
+
+function getModel(model?: string): string {
+  return model ?? "gpt-5-mini";
+}
+
 export async function runTriageSpecialist(
   args: RunTriageSpecialistArgs,
-): Promise<TriageSpecialistDraft> {
+): Promise<RunTriageSpecialistResult> {
   const input = ticketInputSchema.parse(args.input);
   const evidence = triageEvidenceSchema.parse(args.evidence);
   const promptMode = args.promptMode ?? "local";
+  const model = getModel(args.model);
 
   let messages: ChatCompletionMessageParam[];
 
@@ -57,6 +70,17 @@ export async function runTriageSpecialist(
       flavor: "chat",
     });
     messages = compiled.messages as ChatCompletionMessageParam[];
+
+    if (compiled.tools && compiled.tools.length > 0) {
+      return runManagedTriageToolLoop({
+        client: args.client,
+        managedPrompt: args.managedPrompt,
+        messages,
+        model,
+        parentSpan: args.parentSpan,
+        tools: compiled.tools,
+      });
+    }
   } else {
     messages = [
       {
@@ -70,11 +94,14 @@ export async function runTriageSpecialist(
     ];
   }
 
-  return await parseStructuredResponse({
-    client: args.client,
-    messages,
-    model: args.model,
-    schema: triageSpecialistDraftSchema,
-    schemaName: "triage_specialist_draft",
-  });
+  return {
+    collectedEvidence: evidence,
+    draft: await parseStructuredResponse({
+      client: args.client,
+      messages,
+      model,
+      schema: triageSpecialistDraftSchema,
+      schemaName: "triage_specialist_draft",
+    }),
+  };
 }

@@ -33,6 +33,7 @@ export function buildLocalTriageSpecialistSystemPrompt(): string {
     "Classify each ticket into one of: billing, auth, api, general.",
     "Set severity to one of: low, medium, high, critical.",
     "Decide whether escalation is needed based on business impact, urgency, and likely internal intervention.",
+    "When retrieval tools are available, use them to gather help-center context and recent account events before finalizing uncertain decisions.",
     "Be conservative. Do not invent facts that are not supported by the ticket.",
     "If the ticket lacks context, lower confidence rather than making strong claims.",
     "Return only the requested structured output for this stage.",
@@ -59,6 +60,7 @@ export function buildLocalTriageSpecialistUserPrompt(
     "- Keep escalation_reason empty when should_escalate is false.",
     "- recommended_action should be concrete and operational.",
     "- evidence_summary should mention the strongest signals in the ticket or context.",
+    "- Use available tools when the provided context is missing or too weak to support a confident decision.",
     "- Use the provided context when it is relevant, but do not invent facts that are not supported.",
   ].join("\n");
 }
@@ -103,6 +105,7 @@ export function buildManagedTriageSpecialistUserTemplate(): string {
     "- Keep escalation_reason empty when should_escalate is false.",
     "- recommended_action should be concrete and operational.",
     "- evidence_summary should mention the strongest signals in the ticket or context.",
+    "- Use available tools when the provided context is missing or too weak to support a confident decision.",
     "- Use the provided context when it is relevant, but do not invent facts that are not supported.",
   ].join("\n");
 }

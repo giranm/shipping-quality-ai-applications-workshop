@@ -1,8 +1,8 @@
 # Shipping Complex AI Applications with Braintrust
 
-Checkpoint: `06-managed-prompts-and-parameters`
+Checkpoint: `07-managed-tools`
 
-This branch moves prompt and runtime-model configuration into Braintrust while keeping the local tools and offline eval flow intact. The staged workflow can now run in either `RUNTIME_MODE=local` or `RUNTIME_MODE=managed`.
+This branch moves the retrieval and escalation tools into Braintrust while keeping prompts and runtime parameters managed from the previous checkpoint. In managed mode, `collect-context` now invokes Braintrust-managed retrieval tools and `finalize-result` invokes a managed escalation tool deterministically after the reviewer approves escalation.
 
 ## What exists here
 
@@ -19,13 +19,15 @@ This branch moves prompt and runtime-model configuration into Braintrust while k
 - deterministic scorers in `src/braintrust/scorers.ts`
 - Braintrust prompt bootstrap in `src/braintrust/prompts.ts`
 - Braintrust runtime parameter bootstrap/loading in `src/braintrust/parameters.ts`
+- Braintrust managed tool bootstrap in `src/braintrust/tools.ts`
+- managed triage tool loop support in `src/braintrust/managed-tools.ts`
 - Braintrust setup entrypoint in `scripts/setup-braintrust.ts`
 - managed runtime path in `src/app.ts` and `src/workflow/`
 - demo and ticket scripts that create root traces and show context, stage outputs, and escalation
 
 ## What is intentionally missing
 
-- no managed tools, remote scorers, or online scoring
+- no remote scorers or online scoring
 
 ## Run
 
@@ -47,7 +49,7 @@ If you also set `BRAINTRUST_API_KEY` and `BRAINTRUST_PROJECT`:
 - `make eval` logs a Braintrust experiment for the full staged run
 
 To run the managed path in this phase:
-- run `make setup-braintrust` once to publish the three prompt slugs and `helpr-runtime-config`
+- run `make setup-braintrust` once to publish the three prompt slugs, `helpr-runtime-config`, and the managed tool slugs
 - then run `RUNTIME_MODE=managed make demo`
 
 If you change prompt or parameter definitions in code and want to refresh the remote objects, use:
@@ -65,6 +67,7 @@ Without Braintrust configured:
 setupBraintrust({
   prompts: ["helpr-triage-specialist", "helpr-policy-reviewer", "helpr-reply-writer"],
   parameters: ["helpr-runtime-config"],
+  tools: ["helpr-search-help-center", "helpr-lookup-recent-account-events", "helpr-create-escalation"],
 });
 
 runSupportTriage(input, {
@@ -72,11 +75,14 @@ runSupportTriage(input, {
   model: loadParameters("helpr-runtime-config").model,
 });
 
-triagePrompt = loadPrompt("helpr-triage-specialist");
-reviewPrompt = loadPrompt("helpr-policy-reviewer");
-replyPrompt = loadPrompt("helpr-reply-writer");
+triageDraft = runManagedPromptWithTools("helpr-triage-specialist");
+reviewed = runManagedPrompt("helpr-policy-reviewer");
+reply = runManagedPrompt("helpr-reply-writer");
+if (reviewed.should_escalate) {
+  invokeManagedTool("helpr-create-escalation");
+}
 ```
 
 ## Next checkpoint
 
-Move to `07-managed-tools` to swap the local retrieval and escalation path for managed Braintrust tools.
+Move to `08-online-scoring` to add remote scorers and automations that evaluate live traces.
