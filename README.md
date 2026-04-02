@@ -1,4 +1,4 @@
-# Shipping Complex AI Applications with Braintrust
+# Shipping Quality AI Applications with Braintrust
 
 Checkpoint: `04-add-tracing`
 
