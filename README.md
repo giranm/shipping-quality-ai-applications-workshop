@@ -32,7 +32,39 @@ If you want to use Braintrust-managed prompts, remote scorers, and online scorin
 make setup-braintrust
 ```
 
+<<<<<<< HEAD
 Recommended baseline for local verification:
+=======
+## Target architecture
+
+This workshop builds toward a bounded staged agent for support triage.
+Early checkpoints only implement part of this flow; later checkpoints fill in the full path.
+
+```mermaid
+flowchart LR
+    A[Ticket input] --> B[collect-context]
+    B --> C[triage-specialist]
+    C --> D[policy-reviewer]
+    D --> E[reply-writer]
+    E --> F[finalize-result]
+    F --> G{should escalate?}
+    G -->|yes| H[create-escalation]
+    G -->|no| I[final result]
+    H --> I
+
+    J[Braintrust] -. prompts, tools, traces, evals, online scoring .-> C
+    J -. operational layer .-> D
+    J -. operational layer .-> E
+```
+
+The intended mental model is:
+
+- deterministic context and business logic stay explicit
+- model stages make bounded decisions rather than running an open-ended agent loop
+- Braintrust becomes the operational layer around prompts, tools, traces, evals, and live scoring
+
+## Next checkpoint
+>>>>>>> f6f9400 (docs: add target architecture overview to workshop readmes)
 
 ```bash
 RUNTIME_MODE=local make demo
@@ -113,6 +145,35 @@ Each support request runs through these stages:
 
 This is a constrained staged system, not an open-ended autonomous loop.
 
+Compact architecture view:
+
+```mermaid
+flowchart LR
+    A[Ticket input] --> B[collect-context]
+    B --> C[triage-specialist]
+    C --> D[policy-reviewer]
+    D --> E[reply-writer]
+    E --> F[finalize-result]
+    F --> G{should escalate?}
+    G -->|yes| H[create-escalation]
+    G -->|no| I[final result]
+    H --> I
+
+    J[Braintrust prompts] -. managed mode .-> C
+    J -. managed mode .-> D
+    J -. managed mode .-> E
+    K[Braintrust tools] -. managed mode .-> C
+    K -. managed mode .-> H
+    L[Braintrust traces] -. wraps request .-> A
+    M[Datasets, evals, online scorers] -. observe quality .-> I
+```
+
+The intended mental model is:
+
+- deterministic context and business logic stay explicit
+- model stages make bounded decisions rather than running an open-ended agent loop
+- in managed mode, Braintrust becomes the control plane around prompts, tools, traces, evals, and live scoring
+
 ## How To Read A Trace
 
 Read each Braintrust trace from top to bottom:
@@ -123,6 +184,33 @@ Read each Braintrust trace from top to bottom:
 4. `policy-reviewer`: approval or override of the first judgment
 5. `reply-writer`: customer-facing response generation
 6. `finalize-result`: deterministic merge plus `create-escalation` if needed
+
+Request sequence:
+
+```mermaid
+sequenceDiagram
+    participant U as User or Script
+    participant A as App
+    participant T as Local Tools
+    participant M as Model Stages
+    participant MT as Managed Tools
+    participant B as Braintrust
+
+    U->>A: submit ticket
+    A->>B: open root trace
+    A->>T: collect local context in local mode
+    A->>M: run triage-specialist
+    M->>MT: retrieve extra context in managed mode
+    MT-->>M: tool results
+    M-->>A: triage draft
+    A->>M: run policy-reviewer
+    M-->>A: reviewed decision
+    A->>M: run reply-writer
+    M-->>A: customer reply
+    A->>A: finalize result deterministically
+    A->>T: create escalation when required
+    A->>B: close trace with final output
+```
 
 Interpretation guide:
 
