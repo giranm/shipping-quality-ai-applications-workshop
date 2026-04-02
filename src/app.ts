@@ -1,7 +1,7 @@
 import type { Span } from "braintrust";
 import OpenAI from "openai";
 
-import { createBraintrustOpenAIClient, withChildSpan } from "./braintrust/tracing.js";
+import { buildSupportTriageTags, createBraintrustOpenAIClient, withChildSpan } from "./braintrust/tracing.js";
 import { type PromptContext } from "./prompts.js";
 import { ticketInputSchema, type EscalationResult, type TicketInput, type TriageResult } from "./schemas.js";
 import { createEscalation, lookupRecentAccountEvents, searchHelpCenter } from "./tools.js";
@@ -63,6 +63,11 @@ export async function runSupportTriageDetailed(
         account_id: parsedInput.account_id ?? null,
         product_area: parsedInput.product_area ?? null,
       },
+      metadata: {
+        runtime_mode: "local",
+        collection_mode: "local_tools",
+      },
+      tags: buildSupportTriageTags("runtime_mode:local", "stage:collect-context"),
     },
     async (stageSpan) =>
       collectContext({
@@ -75,6 +80,15 @@ export async function runSupportTriageDetailed(
                 name: "search-help-center",
                 type: "tool",
                 input: { query },
+                metadata: {
+                  runtime_mode: "local",
+                  tool_mode: "local",
+                },
+                tags: buildSupportTriageTags(
+                  "runtime_mode:local",
+                  "stage:collect-context",
+                  "tool:search-help-center",
+                ),
               },
               async () => searchHelpCenter(query),
             ),
@@ -87,6 +101,15 @@ export async function runSupportTriageDetailed(
                 input: {
                   account_id: accountId ?? null,
                 },
+                metadata: {
+                  runtime_mode: "local",
+                  tool_mode: "local",
+                },
+                tags: buildSupportTriageTags(
+                  "runtime_mode:local",
+                  "stage:collect-context",
+                  "tool:lookup-recent-account-events",
+                ),
               },
               async () => lookupRecentAccountEvents(accountId),
             ),
@@ -100,6 +123,11 @@ export async function runSupportTriageDetailed(
       input: {
         product_area: parsedInput.product_area ?? null,
       },
+      metadata: {
+        runtime_mode: "local",
+        prompt_mode: "local",
+      },
+      tags: buildSupportTriageTags("runtime_mode:local", "stage:triage-specialist", "prompt_mode:local"),
     },
     async () =>
       runTriageSpecialist({
@@ -117,6 +145,11 @@ export async function runSupportTriageDetailed(
         should_escalate: triageDraft.should_escalate,
         severity: triageDraft.severity,
       },
+      metadata: {
+        runtime_mode: "local",
+        prompt_mode: "local",
+      },
+      tags: buildSupportTriageTags("runtime_mode:local", "stage:policy-reviewer", "prompt_mode:local"),
     },
     async () =>
       runPolicyReviewer({
@@ -135,6 +168,11 @@ export async function runSupportTriageDetailed(
         category: reviewedDecision.category,
         severity: reviewedDecision.severity,
       },
+      metadata: {
+        runtime_mode: "local",
+        prompt_mode: "local",
+      },
+      tags: buildSupportTriageTags("runtime_mode:local", "stage:reply-writer", "prompt_mode:local"),
     },
     async () =>
       runReplyWriter({
@@ -148,6 +186,11 @@ export async function runSupportTriageDetailed(
     options.parentSpan,
     {
       name: "finalize-result",
+      metadata: {
+        runtime_mode: "local",
+        reviewer_action: reviewedDecision.reviewer_action,
+      },
+      tags: buildSupportTriageTags("runtime_mode:local", "stage:finalize-result"),
     },
     async (stageSpan) =>
       finalizeResult({
@@ -161,6 +204,15 @@ export async function runSupportTriageDetailed(
                 name: "create-escalation",
                 type: "tool",
                 input: { reason },
+                metadata: {
+                  runtime_mode: "local",
+                  tool_mode: "local",
+                },
+                tags: buildSupportTriageTags(
+                  "runtime_mode:local",
+                  "stage:finalize-result",
+                  "tool:create-escalation",
+                ),
               },
               async () => createEscalation(reason),
             ),

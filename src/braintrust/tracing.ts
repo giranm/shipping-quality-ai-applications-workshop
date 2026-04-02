@@ -10,6 +10,7 @@ type SpanArgs = {
   type?: "task" | "tool";
   input?: unknown;
   metadata?: Record<string, unknown>;
+  tags?: string[];
 };
 
 function serializeError(error: unknown): string {
@@ -62,6 +63,10 @@ export function buildTicketMetadata(input: TicketInput, extra: Record<string, un
   };
 }
 
+export function buildSupportTriageTags(...tags: string[]): string[] {
+  return [...new Set(["helpr", "workflow:support-triage", ...tags].filter(Boolean))];
+}
+
 export async function withTrace<T>(
   args: SpanArgs,
   callback: (span: Span | null) => Promise<T>,
@@ -76,6 +81,7 @@ export async function withTrace<T>(
     event: {
       input: args.input,
       metadata: args.metadata,
+      tags: args.tags,
     },
   });
 
@@ -126,6 +132,7 @@ export async function withChildSpan<T>(
     event: {
       input: args.input,
       metadata: args.metadata,
+      tags: args.tags,
     },
   });
 }

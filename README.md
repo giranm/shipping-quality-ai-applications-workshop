@@ -2,7 +2,7 @@
 
 Checkpoint: `04-add-tracing`
 
-This branch adds Braintrust tracing around the staged workflow. Root runs, workflow stages, local retrieval tools, and deterministic escalation creation now appear as nested spans so the agent flow is inspectable in the Braintrust UI.
+This branch adds Braintrust tracing around the staged workflow. Root runs, workflow stages, local retrieval tools, and deterministic escalation creation now appear as nested spans, and each span carries consistent metadata and Braintrust tags so the agent flow is inspectable and easy to filter in the UI.
 
 ## What exists here
 
@@ -12,6 +12,7 @@ This branch adds Braintrust tracing around the staged workflow. Root runs, workf
 - explicit workflow stages under `src/workflow/`
 - Braintrust tracing helpers in `src/braintrust/tracing.ts`
 - traced app orchestration in `src/app.ts`
+- consistent root/stage/tool metadata and tags across the local runtime path
 - demo and ticket scripts that create root traces and show context, stage outputs, and escalation
 
 ## What is intentionally missing

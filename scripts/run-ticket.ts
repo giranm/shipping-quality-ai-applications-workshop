@@ -5,6 +5,7 @@ import { stdin as input, stdout as output } from "node:process";
 
 import { runSupportTriageDetailed } from "../src/app.js";
 import {
+  buildSupportTriageTags,
   buildTicketMetadata,
   createBraintrustOpenAIClient,
   withTrace,
@@ -167,7 +168,11 @@ async function main(): Promise<void> {
       {
         name: "support-triage-manual",
         input: ticketInput,
-        metadata: buildTicketMetadata(ticketInput, { source: "manual_ticket_cli" }),
+        metadata: buildTicketMetadata(ticketInput, {
+          source: "manual_ticket_cli",
+          runtime_mode: "local",
+        }),
+        tags: buildSupportTriageTags("entrypoint:manual", "runtime_mode:local"),
       },
       async (span) => runSupportTriageDetailed(ticketInput, { client, parentSpan: span }),
     );

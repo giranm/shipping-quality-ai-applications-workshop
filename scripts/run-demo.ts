@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import { runSupportTriageDetailed } from "../src/app.js";
 import {
+  buildSupportTriageTags,
   buildTicketMetadata,
   createBraintrustOpenAIClient,
   withTrace,
@@ -31,7 +32,11 @@ async function main(): Promise<void> {
       {
         name: "support-triage-demo",
         input,
-        metadata: buildTicketMetadata(input, { source: "demo_script" }),
+        metadata: buildTicketMetadata(input, {
+          source: "demo_script",
+          runtime_mode: "local",
+        }),
+        tags: buildSupportTriageTags("entrypoint:demo", "runtime_mode:local"),
       },
       async (span) => runSupportTriageDetailed(input, { client, parentSpan: span }),
     );
