@@ -1,4 +1,4 @@
-# Shipping Complex AI Applications with Braintrust
+# Shipping Quality AI Applications with Braintrust
 
 `Helpr` is a workshop reference app for a fictional B2B SaaS support triage system.
 The repo demonstrates the operational loop around a staged AI workflow:
