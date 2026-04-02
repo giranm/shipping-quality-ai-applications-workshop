@@ -27,6 +27,10 @@ make demo
 make ticket
 ```
 
+If you only set `OPENAI_API_KEY`, the commands still run and print local output.
+
+If you also set `BRAINTRUST_API_KEY` and `BRAINTRUST_PROJECT`, the same commands emit root, stage, and tool traces to Braintrust so you can inspect the workflow in the UI.
+
 ## Pseudocode
 
 ```ts
