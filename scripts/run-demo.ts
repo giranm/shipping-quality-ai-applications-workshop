@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { runSupportTriage } from "../src/app.js";
+import { runSupportTriageDetailed } from "../src/app.js";
 import { type TicketInput } from "../src/schemas.js";
 
 const demoTickets: TicketInput[] = [
@@ -20,11 +20,15 @@ const demoTickets: TicketInput[] = [
 
 async function main(): Promise<void> {
   for (const input of demoTickets) {
-    const result = await runSupportTriage(input);
+    const run = await runSupportTriageDetailed(input);
     console.log("Input:");
-    console.log(JSON.stringify(input, null, 2));
+    console.log(JSON.stringify(run.input, null, 2));
+    console.log("Context:");
+    console.log(JSON.stringify(run.context, null, 2));
+    console.log("Escalation:");
+    console.log(JSON.stringify(run.escalation, null, 2));
     console.log("Result:");
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(run.result, null, 2));
     console.log("---");
   }
 }

@@ -3,7 +3,7 @@ import "dotenv/config";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 
-import { runSupportTriage } from "../src/app.js";
+import { runSupportTriageDetailed } from "../src/app.js";
 import {
   customerTierSchema,
   productAreaSchema,
@@ -157,14 +157,20 @@ async function main(): Promise<void> {
 
   try {
     const ticketInput = await promptForTicketInput(reader);
-    const result = await runSupportTriage(ticketInput);
+    const run = await runSupportTriageDetailed(ticketInput);
 
     console.log("");
     console.log("Input:");
-    console.log(JSON.stringify(ticketInput, null, 2));
+    console.log(JSON.stringify(run.input, null, 2));
+    console.log("");
+    console.log("Context:");
+    console.log(JSON.stringify(run.context, null, 2));
+    console.log("");
+    console.log("Escalation:");
+    console.log(JSON.stringify(run.escalation, null, 2));
     console.log("");
     console.log("Result:");
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(run.result, null, 2));
   } finally {
     reader.close();
   }

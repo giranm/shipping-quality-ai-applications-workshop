@@ -1,19 +1,19 @@
 # Shipping Complex AI Applications with Braintrust
 
-Checkpoint: `01-basic-agent`
+Checkpoint: `02-add-local-tools`
 
-This branch adds the first runnable version of Helpr: one prompt in, one structured triage result out. It is deliberately local-only and keeps the workflow to a single model call so attendees can understand the prototype before tools, stages, and Braintrust enter the picture.
+This branch adds deterministic local tools to the first runnable agent. The model still makes one structured decision, but it now sees retrieved context and the app can trigger a deterministic escalation record when the ticket should be escalated.
 
 ## What exists here
 
-- one-pass support triage flow in `src/app.ts`
-- shared input and output schemas in `src/schemas.ts`
-- local prompt construction in `src/prompts.ts`
-- a demo runner and interactive ticket CLI
+- local help-center search in `src/tools.ts`
+- local account-event lookup in `src/tools.ts`
+- deterministic escalation creation in `src/tools.ts`
+- one-pass support triage flow with deterministic context in `src/app.ts`
+- demo and ticket scripts that show context and escalation
 
 ## What is intentionally missing
 
-- no deterministic tools
 - no staged specialist workflow
 - no Braintrust tracing, datasets, evals, or managed objects
 
@@ -29,11 +29,13 @@ make ticket
 
 ```ts
 runSupportTriage(input) {
-  prompt = buildPrompt(input);
-  return model(prompt).asStructuredJson();
+  context = collectLocalContext(input);
+  result = model(buildPrompt(input, context)).asStructuredJson();
+  escalation = result.should_escalate ? createEscalation(result.escalation_reason) : null;
+  return { result, context, escalation };
 }
 ```
 
 ## Next checkpoint
 
-Move to `02-add-local-tools` to add deterministic context before the model decides.
+Move to `03-specialist-stages` to split the single decision into explicit AI stages.
