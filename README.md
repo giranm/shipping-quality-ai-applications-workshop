@@ -46,6 +46,16 @@ If you also set `BRAINTRUST_API_KEY` and `BRAINTRUST_PROJECT`:
 - `make seed-dataset` uploads `Helpr Seed Dataset`
 - `make eval` logs a Braintrust experiment for the full staged run
 
+To run the managed path in this phase:
+- run `make setup-braintrust` once to publish the three prompt slugs and `helpr-runtime-config`
+- then run `RUNTIME_MODE=managed make demo`
+
+If you change prompt or parameter definitions in code and want to refresh the remote objects, use:
+
+```bash
+BRAINTRUST_IF_EXISTS=replace make setup-braintrust
+```
+
 Without Braintrust configured:
 - `make eval` falls back to a local score summary instead of creating a remote experiment
 
