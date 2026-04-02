@@ -1,8 +1,9 @@
 # Shipping Complex AI Applications with Braintrust
 
-Checkpoint: `09a-prod-failure`
+Checkpoint: `09b-remediation`
 
-This branch introduces a production-failure replay loop. The goal is to surface realistic problematic tickets in traces before applying remediation changes.
+This branch applies the remediation loop on top of the failure replay work:
+1) isolate a failure trace, 2) target a scenario in evals, 3) tune prompts, 4) re-run evals to confirm improvement.
 
 ## What exists here
 
@@ -27,14 +28,18 @@ This branch introduces a production-failure replay loop. The goal is to surface 
 - runtime metadata logging on managed tool/scorer spans
 - production failure fixture rows in `data/prod_failures.jsonl`
 - failure replay runner in `scripts/replay-failure.ts`
+- eval filters in `src/braintrust/evals.ts` (`EVAL_SCENARIO`, `EVAL_MATCH`, `--scenario`, `--match`)
+- scenario-aware experiment naming for Braintrust eval runs
+- reviewer/reply prompt calibration updates in `src/prompts.ts`
 - Braintrust setup entrypoint in `scripts/setup-braintrust.ts`
 - managed runtime path in `src/app.ts` and `src/workflow/`
 - demo and ticket scripts that create root traces and show context, stage outputs, and escalation
 
-## What is intentionally missing
+## Phase 09 refs
 
-- no targeted remediation eval filtering yet
-- no remediation prompt tuning yet
+- `workshop/09a-prod-failure` / `09a-prod-failure`: replay-only failure checkpoint
+- `workshop/09b-remediation` / `09b-remediation`: remediation checkpoint (this branch)
+- `workshop/09-prod-failure-and-remediation` / `09-prod-failure-and-remediation`: alias to remediation state
 
 ## Run
 
@@ -47,6 +52,8 @@ make eval
 make replay-failure
 make ticket
 RUNTIME_MODE=managed make demo
+RUNTIME_MODE=managed FAILURE_MATCH="board reporting" make replay-failure
+RUNTIME_MODE=managed EVAL_SCENARIO=calm_wording_high_impact make eval
 ```
 
 `make demo` and `make ticket` still work with only `OPENAI_API_KEY`.
@@ -56,10 +63,11 @@ If you also set `BRAINTRUST_API_KEY` and `BRAINTRUST_PROJECT`:
 - `make seed-dataset` uploads `Helpr Seed Dataset`
 - `make eval` logs a Braintrust experiment for the full staged run
 
-To run failure replay in this phase:
+To run remediation in this phase:
 - run `make setup-braintrust` once to publish prompts, parameters, tools, scorers, and online scoring rules
-- then run `RUNTIME_MODE=managed make replay-failure`
-- optional filtering: `FAILURE_MATCH="board reporting" RUNTIME_MODE=managed make replay-failure`
+- run one failure replay case with `FAILURE_MATCH` to isolate the trace
+- run one targeted eval with `EVAL_SCENARIO`
+- run the full eval set again to check for regressions
 
 If you change prompt or parameter definitions in code and want to refresh the remote objects, use:
 
@@ -81,15 +89,26 @@ setupBraintrust({
   onlineRules: ["helpr-root-quality-online", "helpr-reply-quality-online", "helpr-stage-structure-online"],
 });
 
-for (failureTicket of prodFailures) {
+for (failureTicket of prodFailures.filter(match("board reporting"))) {
   runSupportTriage(failureTicket, {
     runtimeMode: "managed",
     model: loadParameters("helpr-runtime-config").model,
   });
   inspectTrace("replay-prod-failure");
 }
+
+tunePrompt("helpr-policy-reviewer");
+
+runEval({
+  runtimeMode: "managed",
+  scenario: "calm_wording_high_impact",
+});
+
+runEval({
+  runtimeMode: "managed",
+});
 ```
 
 ## Next checkpoint
 
-Move to `09b-remediation` to add targeted eval filters and prompt remediation.
+Move to `10-final` to freeze workshop output and publish the curated path.

@@ -1,7 +1,22 @@
 import type { EvalScorer } from "braintrust";
 
-import { triageResultSchema, type TicketInput, type TriageResult } from "../schemas.js";
+import type { TicketInput, TriageResult } from "../schemas.js";
 import type { EvalExpected } from "./dataset.js";
+import {
+  scoreCategoryExact,
+  scoreConfidenceInRange,
+  scoreConflictingSignalsActionable,
+  scoreEnterpriseBlockedNotLow,
+  scoreEscalationExact,
+  scoreEscalationReasonPresent,
+  scoreLowContextConfidenceCap,
+  scoreReplyRubric,
+  scoreRequiredFieldsPresent,
+  scoreReviewerOverrideGuardrail,
+  scoreSchemaValidity,
+  scoreSeverityExact,
+  type ScoreResult,
+} from "./scorer-logic.js";
 
 type NamedScore = {
   name: string;
@@ -19,66 +34,52 @@ function score(name: string, value: number | null, metadata?: Record<string, unk
   };
 }
 
-function average(values: number[]): number {
-  if (values.length === 0) {
-    return 0;
-  }
-
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
+function namedScore(name: string, result: ScoreResult): NamedScore {
+  return score(name, result.score, result.metadata);
 }
 
 export const categoryExactMatch: TriageScorer = ({ output, expected }) =>
-  score("category_exact", output.category === expected.category ? 1 : 0);
+  namedScore("category_exact", scoreCategoryExact({ output, expected }));
 
 export const severityExactMatch: TriageScorer = ({ output, expected }) =>
-  score("severity_exact", output.severity === expected.severity ? 1 : 0);
+  namedScore("severity_exact", scoreSeverityExact({ output, expected }));
 
 export const escalationExactMatch: TriageScorer = ({ output, expected }) =>
-  score("escalation_exact", output.should_escalate === expected.should_escalate ? 1 : 0);
+  namedScore("escalation_exact", scoreEscalationExact({ output, expected }));
 
 export const schemaValidity: TriageScorer = ({ output }) =>
-  score("schema_valid", triageResultSchema.safeParse(output).success ? 1 : 0);
+  namedScore("schema_valid", scoreSchemaValidity({ output }));
 
-export const requiredFieldsPresent: TriageScorer = ({ output }) => {
-  const hasAction = output.recommended_action.trim().length > 0;
-  const hasReply = output.customer_reply.trim().length > 0;
-  const hasEscalationReason = !output.should_escalate || output.escalation_reason.trim().length > 0;
-
-  return score("required_fields_present", hasAction && hasReply && hasEscalationReason ? 1 : 0);
-};
+export const requiredFieldsPresent: TriageScorer = ({ output }) =>
+  namedScore("required_fields_present", scoreRequiredFieldsPresent({ output }));
 
 export const escalationReasonWhenEscalated: TriageScorer = ({ output }) =>
-  score(
-    "escalation_reason_present",
-    output.should_escalate ? (output.escalation_reason.trim().length > 0 ? 1 : 0) : 1,
-  );
+  namedScore("escalation_reason_present", scoreEscalationReasonPresent({ output }));
 
-export const blockedEnterpriseNotLowSeverity: TriageScorer = ({ input, output }) => {
-  const normalizedTicket = input.ticket.toLowerCase();
-  const looksBusinessCritical =
-    input.customer_tier === "enterprise" &&
-    /(blocked|cannot|can't|failing|finance|cfo|close|sso|admin|launch)/.test(normalizedTicket);
-
-  return score("enterprise_blocked_not_low", looksBusinessCritical ? (output.severity === "low" ? 0 : 1) : 1);
-};
+export const blockedEnterpriseNotLowSeverity: TriageScorer = ({ input, output }) =>
+  namedScore("enterprise_blocked_not_low", scoreEnterpriseBlockedNotLow({ input, output }));
 
 export const confidenceRange: TriageScorer = ({ output }) =>
-  score("confidence_in_range", output.confidence >= 0 && output.confidence <= 1 ? 1 : 0);
+  namedScore("confidence_in_range", scoreConfidenceInRange({ output }));
+
+export const reviewerOverrideGuardrail: TriageScorer = ({ output, metadata }) =>
+  namedScore("reviewer_override_guardrail", scoreReviewerOverrideGuardrail({ output, metadata }));
+
+export const conflictingSignalsActionable: TriageScorer = ({ output, metadata }) =>
+  namedScore("conflicting_signals_actionable", scoreConflictingSignalsActionable({ output, metadata }));
+
+export const lowContextConfidenceCap: TriageScorer = ({ input, output, metadata }) =>
+  namedScore("low_context_confidence_cap", scoreLowContextConfidenceCap({ input, output, metadata }));
 
 export const customerReplyRubric: TriageScorer = ({ output }) => {
-  const reply = output.customer_reply.toLowerCase();
-  const empathy = /(thanks|sorry|understand|appreciate)/.test(reply) ? 1 : 0;
-  const actionability = /(check|review|investigat|follow up|escalat|look into|update|verify)/.test(reply) ? 1 : 0;
-  const avoidingOverpromising = /(guarantee|definitely fixed|will be fixed immediately)/.test(reply) ? 0 : 1;
-  const correctness = output.should_escalate ? (/(escalat|team|ops|engineering|billing|auth)/.test(reply) ? 1 : 0.5) : 1;
-  const combined = average([empathy, actionability, avoidingOverpromising, correctness]);
+  const rubric = scoreReplyRubric({ output });
 
   return [
-    score("reply_empathy", empathy),
-    score("reply_actionability", actionability),
-    score("reply_avoid_overpromising", avoidingOverpromising),
-    score("reply_correctness", correctness),
-    score("customer_reply_rubric", combined),
+    namedScore("reply_empathy", rubric.reply_empathy),
+    namedScore("reply_actionability", rubric.reply_actionability),
+    namedScore("reply_avoid_overpromising", rubric.reply_avoid_overpromising),
+    namedScore("reply_correctness", rubric.reply_correctness),
+    namedScore("customer_reply_rubric", rubric.customer_reply_rubric),
   ];
 };
 
@@ -91,5 +92,8 @@ export const triageScorers: TriageScorer[] = [
   escalationReasonWhenEscalated,
   blockedEnterpriseNotLowSeverity,
   confidenceRange,
+  reviewerOverrideGuardrail,
+  conflictingSignalsActionable,
+  lowContextConfidenceCap,
   customerReplyRubric,
 ];

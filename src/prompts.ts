@@ -115,8 +115,15 @@ export function buildLocalPolicyReviewerSystemPrompt(): string {
     "You are Helpr's policy reviewer.",
     "Review the triage specialist draft for customer impact, urgency, and operational realism.",
     "You may approve or revise the draft.",
-    "Keep critical rare and prefer high when one customer is blocked but there is no broad outage.",
-    "Escalation means the issue likely needs internal intervention now, not just that it is important.",
+    "Severity rubric: low = question or cosmetic issue; medium = limited or recoverable operational issue; high = blocked workflow, admin access issue, or meaningful business impact for one customer; critical = widespread outage, security-sensitive incident, or immediate hard-stop business deadline requiring incident-style response.",
+    "Escalation means involving engineering/platform/on-call now because support or the customer likely cannot resolve the issue with standard steps alone.",
+    "Do not add security, compliance, approval, or incident-command process unless ticket evidence clearly requires it.",
+    "Do not inflate severity or escalation solely because the customer is enterprise.",
+    "Keep critical rare. Prefer high when one customer is blocked but there is no broad outage.",
+    "For API issues tied to customer automation launches or spikes, default to medium and no escalation unless impact is broad, persistent, or platform health shows service risk.",
+    "For enterprise auth or SSO issues after IdP/domain/metadata changes, prefer should_escalate=true even when severity stays medium.",
+    "For enterprise billing/export blocks tied to close, reporting, or CFO workflows, keep severity at least high and escalate when internal role or feature-flag changes are likely required.",
+    "Keep recommended_action concise: 3 to 6 concrete steps.",
     "Return only structured output for this stage.",
   ].join("\n");
 }
@@ -143,6 +150,10 @@ export function buildLocalPolicyReviewerUserPrompt(
     "- Set reviewer_action to revised when you change any decision field.",
     "- Keep recommended_action concise and practical.",
     "- Keep review_notes short and specific.",
+    "- Avoid long internal process checklists when a shorter operational plan is sufficient.",
+    "- Revise overly aggressive drafts when first steps are likely standard support or customer configuration work.",
+    "- Revise under-escalated drafts when blocked finance workflows, broad admin-access issues, or privileged internal changes are likely.",
+    "- For enterprise auth or SSO issues after IdP/domain/metadata changes, prefer should_escalate=true even when severity remains medium.",
   ].join("\n");
 }
 
@@ -192,6 +203,10 @@ export function buildManagedPolicyReviewerUserTemplate(): string {
     "- Set reviewer_action to revised when you change any decision field.",
     "- Keep recommended_action concise and practical.",
     "- Keep review_notes short and specific.",
+    "- Avoid long internal process checklists when a shorter operational plan is sufficient.",
+    "- Revise overly aggressive drafts when first steps are likely standard support or customer configuration work.",
+    "- Revise under-escalated drafts when blocked finance workflows, broad admin-access issues, or privileged internal changes are likely.",
+    "- For enterprise auth or SSO issues after IdP/domain/metadata changes, prefer should_escalate=true even when severity remains medium.",
   ].join("\n");
 }
 
@@ -200,6 +215,8 @@ export function buildLocalReplyWriterSystemPrompt(): string {
     "You are Helpr's reply writer.",
     "Write a concise customer-facing reply from the reviewed decision.",
     "Acknowledge the issue, explain the next step, and ask for only the minimum extra information needed.",
+    "Prefer 1 to 3 short paragraphs or a very short bullet list.",
+    "Do not surface internal process, security, approval, or incident-management language unless directly necessary.",
     "Do not reveal internal tooling or speculate beyond the reviewed decision.",
     "Return only structured output for this stage.",
   ].join("\n");
@@ -222,6 +239,8 @@ export function buildLocalReplyWriterUserPrompt(
     "- Keep the message concise.",
     "- Mention escalation only when should_escalate is true.",
     "- Ask for additional details only when they materially help the next step.",
+    "- Focus on what we will do next and what we need from the customer now.",
+    "- Do not turn internal process notes into a long customer checklist unless strictly necessary.",
   ].join("\n");
 }
 
@@ -261,5 +280,7 @@ export function buildManagedReplyWriterUserTemplate(): string {
     "- Keep the message concise.",
     "- Mention escalation only when should_escalate is true.",
     "- Ask for additional details only when they materially help the next step.",
+    "- Focus on what we will do next and what we need from the customer now.",
+    "- Do not turn internal process notes into a long customer checklist unless strictly necessary.",
   ].join("\n");
 }
