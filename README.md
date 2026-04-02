@@ -1,8 +1,8 @@
 # Shipping Complex AI Applications with Braintrust
 
-Checkpoint: `04-add-tracing`
+Checkpoint: `05-add-dataset-and-evals`
 
-This branch adds Braintrust tracing around the staged workflow. Root runs, workflow stages, local retrieval tools, and deterministic escalation creation now appear as nested spans, and each span carries consistent metadata and Braintrust tags so the agent flow is inspectable and easy to filter in the UI.
+This branch adds a seeded eval dataset and offline Braintrust experiments around the traced staged workflow. Each eval row runs one full support ticket end to end, then scores the final result with deterministic exact-match checks plus a small reply rubric.
 
 ## What exists here
 
@@ -13,17 +13,23 @@ This branch adds Braintrust tracing around the staged workflow. Root runs, workf
 - Braintrust tracing helpers in `src/braintrust/tracing.ts`
 - traced app orchestration in `src/app.ts`
 - consistent root/stage/tool metadata and tags across the local runtime path
+- seeded dataset rows in `data/evals.seed.jsonl`
+- dataset upload in `src/braintrust/dataset.ts` and `scripts/seed-dataset.ts`
+- offline eval runner in `src/braintrust/evals.ts`
+- deterministic scorers in `src/braintrust/scorers.ts`
 - demo and ticket scripts that create root traces and show context, stage outputs, and escalation
 
 ## What is intentionally missing
 
-- no datasets, evals, managed prompts, managed tools, or online scoring
+- no managed prompts, managed tools, managed parameters, or online scoring
 
 ## Run
 
 ```bash
 make setup
 make demo
+make seed-dataset
+make eval
 make ticket
 ```
 
@@ -34,17 +40,13 @@ If you also set `BRAINTRUST_API_KEY` and `BRAINTRUST_PROJECT`, the same commands
 ## Pseudocode
 
 ```ts
-runSupportTriage(input) {
-  return withTrace("support-triage", input, async (rootSpan) => {
-    context = withChildSpan(rootSpan, "collect-context", () => collectContext(input));
-    draft = withChildSpan(rootSpan, "triage-specialist", () => runTriageSpecialist(input, context));
-    reviewed = withChildSpan(rootSpan, "policy-reviewer", () => runPolicyReviewer(input, context, draft));
-    reply = withChildSpan(rootSpan, "reply-writer", () => runReplyWriter(input, reviewed));
-    return withChildSpan(rootSpan, "finalize-result", () => finalizeResult(reviewed, reply));
-  });
+for (row of seedDataset) {
+  output = runSupportTriage(row.input);
+  scores = scoreFinalResult(output, row.expected);
+  logExperimentRow({ input: row.input, output, scores });
 }
 ```
 
 ## Next checkpoint
 
-Move to `05-add-dataset-and-evals` to start scoring complete ticket runs against seeded examples.
+Move to `06-managed-prompts-and-parameters` to move prompt/runtime configuration into Braintrust.
