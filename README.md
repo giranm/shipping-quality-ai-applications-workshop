@@ -139,4 +139,4 @@ The intended mental model is:
 
 ## Next checkpoint
 
-Move to `10-final` to freeze workshop output and publish the curated path.
+Move to `10-final` for the workshop-ready final freeze.
