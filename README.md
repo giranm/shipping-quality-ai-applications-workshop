@@ -231,7 +231,7 @@ This is the recommended setup split:
 
 Keep this command explicit rather than folding it into `make setup`. It has remote side effects and should not overwrite UI-managed prompt edits unless you opt into `replace`.
 
-## Checkpoint Map
+## Workshop checkpoints
 
 - `00-starter`
 - `01-basic-agent`
@@ -247,17 +247,10 @@ Keep this command explicit rather than folding it into `make setup`. It has remo
 - `09-prod-failure-and-remediation` (canonical alias to `09b-remediation`)
 - `10-final`
 
-Publication strategy:
+Workshop refs:
 
-- `main` is the latest integrated state.
-- `feat/*` branches are internal implementation branches.
-- attendee-facing checkpoints should be published from a separate curated workshop history, ideally built on an orphan branch after `main` is frozen.
-- publish those curated checkpoints as runnable tags and matching `workshop/*` branches.
-- those checkpoint refs do not need to map one-to-one to the raw merge history; the workshop narrative is allowed to be cleaner than the development history.
-- after publishing the checkpoint tags/branches, internal `feat/*` branches and temporary worktrees can be archived or deleted.
-
-See [docs/workshop-freeze-manifest.md](/Users/giran.moodley/dev/workshop-shipping-complex-ai-apps-with-braintrust/docs/workshop-freeze-manifest.md) for the expected Braintrust object slugs, validation state, and public freeze assumptions that go with the frozen workshop state.
-See [docs/workshop-publication-plan.md](/Users/giran.moodley/dev/workshop-shipping-complex-ai-apps-with-braintrust/docs/workshop-publication-plan.md) for the plan to turn the frozen `main` branch into a curated attendee-facing checkpoint path.
+- each checkpoint is available as both a tag and a matching `workshop/*` branch
+- `09-prod-failure-and-remediation` points at the same commit as `09b-remediation`
 
 Important checkpoint notes:
 
