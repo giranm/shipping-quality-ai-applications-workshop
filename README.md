@@ -1,16 +1,17 @@
 # Shipping Complex AI Applications with Braintrust
 
-Checkpoint: `02-add-local-tools`
+Checkpoint: `03-specialist-stages`
 
-This branch adds deterministic local tools to the first runnable agent. The model still makes one structured decision, but it now sees retrieved context and the app can trigger a deterministic escalation record when the ticket should be escalated.
+This branch refactors Helpr into a staged workflow. Context collection, triage drafting, policy review, reply writing, and deterministic finalization are now explicit, and the finalization stage is responsible for creating the escalation record when required.
 
 ## What exists here
 
 - local help-center search in `src/tools.ts`
 - local account-event lookup in `src/tools.ts`
 - deterministic escalation creation in `src/tools.ts`
-- one-pass support triage flow with deterministic context in `src/app.ts`
-- demo and ticket scripts that show context and escalation
+- explicit workflow stages under `src/workflow/`
+- app orchestration in `src/app.ts`
+- demo and ticket scripts that show context, stage outputs, and escalation
 
 ## What is intentionally missing
 
@@ -29,13 +30,14 @@ make ticket
 
 ```ts
 runSupportTriage(input) {
-  context = collectLocalContext(input);
-  result = model(buildPrompt(input, context)).asStructuredJson();
-  escalation = result.should_escalate ? createEscalation(result.escalation_reason) : null;
-  return { result, context, escalation };
+  context = collectContext(input);
+  draft = runTriageSpecialist(input, context);
+  reviewed = runPolicyReviewer(input, context, draft);
+  reply = runReplyWriter(input, reviewed);
+  return finalizeResult(reviewed, reply);
 }
 ```
 
 ## Next checkpoint
 
-Move to `03-specialist-stages` to split the single decision into explicit AI stages.
+Move to `04-add-tracing` to make the staged execution path visible in Braintrust.

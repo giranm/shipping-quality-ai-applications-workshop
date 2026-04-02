@@ -43,8 +43,44 @@ export const escalationResultSchema = z.object({
   reason: z.string().min(1),
 });
 
+export const triageEvidenceSchema = z.object({
+  help_center_results: z.array(helpCenterResultSchema),
+  recent_account_events: z.array(recentAccountEventSchema),
+});
+
+export const triageSpecialistDraftSchema = z.object({
+  category: categorySchema,
+  severity: severitySchema,
+  should_escalate: z.boolean(),
+  escalation_reason: z.string(),
+  recommended_action: z.string().min(1),
+  confidence: z.number().min(0).max(1),
+  evidence_summary: z.string().min(1),
+});
+
+export const policyReviewerActionSchema = z.enum(["approved", "revised"]);
+
+export const policyReviewerDecisionSchema = z.object({
+  reviewer_action: policyReviewerActionSchema,
+  category: categorySchema,
+  severity: severitySchema,
+  should_escalate: z.boolean(),
+  escalation_reason: z.string(),
+  recommended_action: z.string().min(1),
+  confidence: z.number().min(0).max(1),
+  review_notes: z.string().min(1),
+});
+
+export const replyWriterOutputSchema = z.object({
+  customer_reply: z.string().min(1),
+});
+
 export type TicketInput = z.infer<typeof ticketInputSchema>;
 export type TriageResult = z.infer<typeof triageResultSchema>;
 export type HelpCenterResult = z.infer<typeof helpCenterResultSchema>;
 export type RecentAccountEvent = z.infer<typeof recentAccountEventSchema>;
 export type EscalationResult = z.infer<typeof escalationResultSchema>;
+export type TriageEvidence = z.infer<typeof triageEvidenceSchema>;
+export type TriageSpecialistDraft = z.infer<typeof triageSpecialistDraftSchema>;
+export type PolicyReviewerDecision = z.infer<typeof policyReviewerDecisionSchema>;
+export type ReplyWriterOutput = z.infer<typeof replyWriterOutputSchema>;

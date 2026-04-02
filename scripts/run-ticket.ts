@@ -166,6 +166,9 @@ async function main(): Promise<void> {
     console.log("Context:");
     console.log(JSON.stringify(run.context, null, 2));
     console.log("");
+    console.log("Stages:");
+    console.log(JSON.stringify(run.stages, null, 2));
+    console.log("");
     console.log("Escalation:");
     console.log(JSON.stringify(run.escalation, null, 2));
     console.log("");

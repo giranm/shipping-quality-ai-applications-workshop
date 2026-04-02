@@ -25,6 +25,8 @@ async function main(): Promise<void> {
     console.log(JSON.stringify(run.input, null, 2));
     console.log("Context:");
     console.log(JSON.stringify(run.context, null, 2));
+    console.log("Stages:");
+    console.log(JSON.stringify(run.stages, null, 2));
     console.log("Escalation:");
     console.log(JSON.stringify(run.escalation, null, 2));
     console.log("Result:");
