@@ -1,4 +1,4 @@
-import { projects } from "braintrust";
+import { currentSpan, projects } from "braintrust";
 import { spawn } from "node:child_process";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, parse } from "node:path";
@@ -49,6 +49,12 @@ type RemoteScorerValue = {
   score: number;
 };
 
+type NamedRemoteScore = {
+  metadata?: Record<string, unknown>;
+  name: string;
+  score: number;
+};
+
 function getRemoteScorerRegistrations(): RemoteScorerRegistration[] {
   return buildRemoteScorerRegistrations();
 }
@@ -59,6 +65,23 @@ function buildNamedScore(name: string, value: RemoteScorerValue): { name: string
     score: value.score,
     ...(value.metadata ? { metadata: value.metadata } : {}),
   };
+}
+
+function isNamedRemoteScore(value: unknown): value is NamedRemoteScore {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.name === "string" && typeof candidate.score === "number";
+}
+
+function logScoreSpanMetadata(data: Record<string, unknown>): void {
+  try {
+    currentSpan()?.log({ metadata: data });
+  } catch {
+    // Best-effort enrichment; scoring should continue even if span metadata cannot be logged.
+  }
 }
 
 export const remoteScorerSlugs = {
@@ -152,7 +175,21 @@ function buildRemoteScorerRegistrations(): RemoteScorerRegistration[] {
         ifExists: options.ifExists,
         tags: buildScorerTags("code", onlineEligible, extra?.tags),
         metadata: buildScorerMetadata("code", onlineEligible, slug, extra?.metadata),
-        handler,
+        handler: (args: RemoteScorerArgs) => {
+          const result = handler(args);
+          if (isNamedRemoteScore(result)) {
+            logScoreSpanMetadata({
+              component: "helpr",
+              object_role: "score_span",
+              scorer_name: name,
+              scorer_slug: slug,
+              score_name: result.name,
+              score: result.score,
+              ...(result.metadata ? { score_metadata: result.metadata } : {}),
+            });
+          }
+          return result;
+        },
       });
     },
   });

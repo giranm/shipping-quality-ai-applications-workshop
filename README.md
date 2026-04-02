@@ -24,6 +24,7 @@ This branch adds managed remote scorers and online scoring rules so live traces 
 - remote scorer bootstrap in `src/braintrust/remote-scorers.ts`
 - shared scorer logic in `src/braintrust/scorer-logic.ts`
 - online scoring rule bootstrap in `src/braintrust/online-rules.ts`
+- runtime metadata logging on managed tool/scorer spans
 - Braintrust setup entrypoint in `scripts/setup-braintrust.ts`
 - managed runtime path in `src/app.ts` and `src/workflow/`
 - demo and ticket scripts that create root traces and show context, stage outputs, and escalation
