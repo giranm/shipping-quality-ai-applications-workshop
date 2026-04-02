@@ -1,8 +1,10 @@
 import "dotenv/config";
 
 import type { BraintrustIfExists } from "../src/braintrust/api.js";
+import { setupBraintrustOnlineRules } from "../src/braintrust/online-rules.js";
 import { defaultRuntimeModel, setupBraintrustParameters } from "../src/braintrust/parameters.js";
 import { setupBraintrustPrompts } from "../src/braintrust/prompts.js";
+import { setupBraintrustScorers } from "../src/braintrust/remote-scorers.js";
 import { setupBraintrustTools } from "../src/braintrust/tools.js";
 
 function parseIfExists(argv: string[]): BraintrustIfExists | undefined {
@@ -18,7 +20,10 @@ function parseIfExists(argv: string[]): BraintrustIfExists | undefined {
     return "ignore";
   }
 
-  const envValue = process.env.BRAINTRUST_IF_EXISTS;
+  const envValue =
+    process.env.BRAINTRUST_IF_EXISTS ??
+    process.env.BRAINTRUST_SCORER_IF_EXISTS ??
+    process.env.BRAINTRUST_PROMPT_IF_EXISTS;
 
   if (envValue === "error" || envValue === "ignore" || envValue === "replace") {
     return envValue;
@@ -28,7 +33,16 @@ function parseIfExists(argv: string[]): BraintrustIfExists | undefined {
 }
 
 function preserveRemoteParameterValues(argv: string[]): boolean {
-  return !argv.includes("--force-parameter-values");
+  if (argv.includes("--force-parameter-values")) {
+    return false;
+  }
+
+  const envValue = process.env.BRAINTRUST_FORCE_PARAMETER_VALUES?.toLowerCase();
+  if (envValue === "1" || envValue === "true" || envValue === "yes") {
+    return false;
+  }
+
+  return true;
 }
 
 const dryRun = process.argv.includes("--dry-run");
@@ -79,10 +93,31 @@ const toolResult = await setupBraintrustTools(
     onLog: (line) => console.log(line),
   },
 );
-
 console.log(`Preflight: using managed runtime model "${runtimeParameters.model}" for prompt publication.`);
+console.log(`Preflight: using managed runtime model "${runtimeParameters.model}" for LLM scorer publication.`);
+const scorerResult = await setupBraintrustScorers(
+  {
+    projectName,
+    ifExists,
+    model: runtimeParameters.model,
+  },
+  {
+    dryRun,
+    onLog: (line) => console.log(line),
+  },
+);
+const onlineRuleResult = await setupBraintrustOnlineRules(
+  {
+    projectName,
+  },
+  {
+    dryRun,
+    onLog: (line) => console.log(line),
+  },
+);
+
 console.log(
-  `${dryRun ? "Planned" : "Bootstrapped"} Braintrust project ${promptResult.projectName} with ${promptResult.prompts.length} prompt(s), ${toolResult.tools.length} tool(s), and 1 parameter object(s).`,
+  `${dryRun ? "Planned" : "Bootstrapped"} Braintrust project ${promptResult.projectName} with ${promptResult.prompts.length} prompt(s), ${toolResult.tools.length} tool(s), 1 parameter object(s), ${scorerResult.scorers.length} scorer(s), and ${onlineRuleResult.rules.length} online rule(s).`,
 );
 console.log(
   JSON.stringify(
@@ -90,6 +125,8 @@ console.log(
       prompts: promptResult,
       tools: toolResult,
       parameters: parametersResult,
+      scorers: scorerResult,
+      online_rules: onlineRuleResult,
     },
     null,
     2,
