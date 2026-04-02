@@ -11,7 +11,8 @@
     "ticket": "node --import=tsx scripts/run-ticket.ts",
     "setup:braintrust": "node --import=tsx scripts/setup-braintrust.ts",
     "seed:dataset": "tsx scripts/seed-dataset.ts",
-    "eval": "tsx src/braintrust/evals.ts"
+    "eval": "tsx src/braintrust/evals.ts",
+    "replay:failure": "node --import=tsx scripts/replay-failure.ts"
   },
   "dependencies": {
     "braintrust": "^3.4.0",

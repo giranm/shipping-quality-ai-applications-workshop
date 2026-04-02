@@ -1,6 +1,6 @@
 SHELL := /bin/zsh
 
-.PHONY: setup setup-braintrust demo ticket seed-dataset eval typecheck build
+.PHONY: setup setup-braintrust demo ticket seed-dataset eval replay-failure typecheck build
 
 setup:
 	mise exec -- pnpm install
@@ -19,6 +19,9 @@ seed-dataset:
 
 eval:
 	mise exec -- pnpm run eval
+
+replay-failure:
+	mise exec -- pnpm run replay:failure
 
 typecheck:
 	mise exec -- pnpm run typecheck

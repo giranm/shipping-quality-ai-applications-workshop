@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { initDataset } from "braintrust";
 import { z } from "zod";
 
-import { ticketInputSchema, triageResultSchema } from "../schemas.js";
+import { ticketInputSchema, triageResultSchema, type TicketInput } from "../schemas.js";
 import { getBraintrustDatasetName, getBraintrustProjectName } from "./config.js";
 
 const evalExpectedSchema = triageResultSchema.pick({
@@ -36,6 +36,12 @@ export async function loadSeedEvalRows(
   file: URL = new URL("../../data/evals.seed.jsonl", import.meta.url),
 ): Promise<EvalRow[]> {
   return loadJsonlFile(file, evalRowSchema);
+}
+
+export async function loadProdFailureRows(
+  file: URL = new URL("../../data/prod_failures.jsonl", import.meta.url),
+): Promise<TicketInput[]> {
+  return loadJsonlFile(file, ticketInputSchema);
 }
 
 export async function seedBraintrustDataset(rows: EvalRow[]) {

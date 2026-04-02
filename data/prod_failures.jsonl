@@ -1,0 +1,5 @@
+{"ticket":"Not urgent, but our CFO cannot export invoices before tomorrow's board reporting.","customer_tier":"enterprise","account_id":"acct_104","product_area":"billing"}
+{"ticket":"We changed our domain last week and only some admins can still get through SSO.","customer_tier":"enterprise","account_id":"acct_201","product_area":"auth"}
+{"ticket":"The API feels flaky after our automation launch, but it is only affecting a few customers so far.","customer_tier":"pro","account_id":"acct_309","product_area":"api"}
+{"ticket":"Docs say migration should not change access, but our finance owner lost billing admin immediately after the upgrade and exports are blocked.","customer_tier":"enterprise","account_id":"acct_104","product_area":"billing"}
+{"ticket":"I do not have account details yet, but people report random login failures this morning.","customer_tier":"pro","product_area":"auth"}

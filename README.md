@@ -1,8 +1,8 @@
 # Shipping Complex AI Applications with Braintrust
 
-Checkpoint: `08-online-scoring`
+Checkpoint: `09a-prod-failure`
 
-This branch adds managed remote scorers and online scoring rules so live traces are scored in Braintrust as they arrive. Prompts, parameters, and tools remain managed from the previous checkpoint.
+This branch introduces a production-failure replay loop. The goal is to surface realistic problematic tickets in traces before applying remediation changes.
 
 ## What exists here
 
@@ -25,13 +25,16 @@ This branch adds managed remote scorers and online scoring rules so live traces 
 - shared scorer logic in `src/braintrust/scorer-logic.ts`
 - online scoring rule bootstrap in `src/braintrust/online-rules.ts`
 - runtime metadata logging on managed tool/scorer spans
+- production failure fixture rows in `data/prod_failures.jsonl`
+- failure replay runner in `scripts/replay-failure.ts`
 - Braintrust setup entrypoint in `scripts/setup-braintrust.ts`
 - managed runtime path in `src/app.ts` and `src/workflow/`
 - demo and ticket scripts that create root traces and show context, stage outputs, and escalation
 
 ## What is intentionally missing
 
-- no production failure replay/remediation flow yet
+- no targeted remediation eval filtering yet
+- no remediation prompt tuning yet
 
 ## Run
 
@@ -41,6 +44,7 @@ make setup-braintrust
 make demo
 make seed-dataset
 make eval
+make replay-failure
 make ticket
 RUNTIME_MODE=managed make demo
 ```
@@ -52,9 +56,10 @@ If you also set `BRAINTRUST_API_KEY` and `BRAINTRUST_PROJECT`:
 - `make seed-dataset` uploads `Helpr Seed Dataset`
 - `make eval` logs a Braintrust experiment for the full staged run
 
-To run the managed path in this phase:
+To run failure replay in this phase:
 - run `make setup-braintrust` once to publish prompts, parameters, tools, scorers, and online scoring rules
-- then run `RUNTIME_MODE=managed make demo`
+- then run `RUNTIME_MODE=managed make replay-failure`
+- optional filtering: `FAILURE_MATCH="board reporting" RUNTIME_MODE=managed make replay-failure`
 
 If you change prompt or parameter definitions in code and want to refresh the remote objects, use:
 
@@ -76,23 +81,15 @@ setupBraintrust({
   onlineRules: ["helpr-root-quality-online", "helpr-reply-quality-online", "helpr-stage-structure-online"],
 });
 
-runSupportTriage(input, {
-  runtimeMode: "managed",
-  model: loadParameters("helpr-runtime-config").model,
-});
-
-triageDraft = runManagedPromptWithTools("helpr-triage-specialist");
-reviewed = runManagedPrompt("helpr-policy-reviewer");
-reply = runManagedPrompt("helpr-reply-writer");
-if (reviewed.should_escalate) {
-  invokeManagedTool("helpr-create-escalation");
+for (failureTicket of prodFailures) {
+  runSupportTriage(failureTicket, {
+    runtimeMode: "managed",
+    model: loadParameters("helpr-runtime-config").model,
+  });
+  inspectTrace("replay-prod-failure");
 }
-scoreOnline({
-  rootSpan: "support-triage-*",
-  stageSpans: ["triage-specialist", "policy-reviewer", "reply-writer"],
-});
 ```
 
 ## Next checkpoint
 
-Move to `09-prod-failure-and-remediation` to add failure replay and a remediation loop.
+Move to `09b-remediation` to add targeted eval filters and prompt remediation.
