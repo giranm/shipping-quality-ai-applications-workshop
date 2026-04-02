@@ -5,11 +5,11 @@ SHELL := /bin/zsh
 setup:
 	mise exec -- pnpm install
 
-demo:
-	mise exec -- pnpm run demo
-
 setup-braintrust:
 	mise exec -- pnpm run setup:braintrust
+
+demo:
+	mise exec -- pnpm run demo
 
 ticket:
 	mise exec -- pnpm run ticket

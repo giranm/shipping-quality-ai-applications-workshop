@@ -9,7 +9,7 @@ import {
 
 export type HelpCenterResult = HelpCenterArticle;
 export type RecentAccountEvent = AccountEvent;
-export type EscalationToolResult = EscalationRecord;
+export type EscalationResult = EscalationRecord;
 
 function normalize(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ");
@@ -70,7 +70,7 @@ function hashReason(reason: string): string {
   return hash.toString(36).padStart(6, "0").slice(0, 6);
 }
 
-export function createEscalation(reason: string): EscalationToolResult {
+export function createEscalation(reason: string): EscalationResult {
   return {
     ...escalationTemplate,
     id: `esc_${hashReason(reason)}`,

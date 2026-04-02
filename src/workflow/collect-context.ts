@@ -27,8 +27,8 @@ export async function collectContext(args: CollectContextArgs): Promise<TriageEv
   const lookup = deps?.lookupRecentAccountEvents ?? lookupRecentAccountEvents;
   const query = [input.product_area, input.ticket].filter(Boolean).join(" ");
   const [helpCenterResults, recentAccountEvents] = await Promise.all([
-    Promise.resolve(search(query)),
-    Promise.resolve(lookup(input.account_id)),
+    search(query),
+    lookup(input.account_id),
   ]);
 
   return triageEvidenceSchema.parse({

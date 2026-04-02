@@ -1,61 +1,56 @@
 import "dotenv/config";
 
-import { getRuntimeMode, runSupportTriageDetailed } from "../src/app.js";
+import { readFile } from "node:fs/promises";
+
+import { runSupportTriageDetailed } from "../src/app.js";
 import {
-  buildSupportTriageTags,
   buildTicketMetadata,
   createBraintrustOpenAIClient,
   withTrace,
 } from "../src/braintrust/tracing.js";
-import { type TicketInput } from "../src/schemas.js";
+import { ticketInputSchema, type TicketInput } from "../src/schemas.js";
 
-const demoTickets: TicketInput[] = [
-  {
-    ticket: "Our finance admin can no longer export invoices after upgrading to Enterprise. This is blocking close today.",
-    customer_tier: "enterprise",
-    account_id: "acct_104",
-    product_area: "billing",
-  },
-  {
-    ticket: "SSO login is failing for several admins after we changed our company domain yesterday.",
-    customer_tier: "enterprise",
-    account_id: "acct_201",
-    product_area: "auth",
-  },
-];
+async function loadDemoTickets(): Promise<TicketInput[]> {
+  const raw = await readFile(new URL("../data/tickets.demo.jsonl", import.meta.url), "utf8");
 
-async function main(): Promise<void> {
-  const client = createBraintrustOpenAIClient();
-  const runtimeMode = getRuntimeMode();
-
-  for (const input of demoTickets) {
-    const run = await withTrace(
-      {
-        name: "support-triage-demo",
-        input,
-        metadata: buildTicketMetadata(input, {
-          source: "demo_script",
-          runtime_mode: runtimeMode,
-        }),
-        tags: buildSupportTriageTags("entrypoint:demo", `runtime_mode:${runtimeMode}`),
-      },
-      async (span) => runSupportTriageDetailed(input, { client, parentSpan: span, runtimeMode }),
-    );
-    console.log("Input:");
-    console.log(JSON.stringify(run.input, null, 2));
-    console.log("Context:");
-    console.log(JSON.stringify(run.context, null, 2));
-    console.log("Stages:");
-    console.log(JSON.stringify(run.stages, null, 2));
-    console.log("Escalation:");
-    console.log(JSON.stringify(run.escalation, null, 2));
-    console.log("Result:");
-    console.log(JSON.stringify(run.result, null, 2));
-    console.log("---");
-  }
+  return raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => ticketInputSchema.parse(JSON.parse(line)));
 }
 
-void main().catch((error: unknown) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+const client = createBraintrustOpenAIClient();
+
+for (const input of await loadDemoTickets()) {
+  const run = await withTrace(
+    {
+      name: "support-triage-demo",
+      input,
+      metadata: buildTicketMetadata(input, { source: "demo_script" }),
+    },
+    async (span) => runSupportTriageDetailed(input, { client, parentSpan: span }),
+  );
+  console.log("Input:");
+  console.log(JSON.stringify(run.input, null, 2));
+  console.log("Agent context:");
+  console.log(
+    JSON.stringify(
+      {
+        runtime_mode: run.context.runtime_mode,
+        stage_prompt_modes: run.context.stage_prompt_modes,
+        reviewer_overrode_draft: run.context.reviewer_overrode_draft,
+        help_center_results: run.context.help_center_results,
+        recent_account_events: run.context.recent_account_events,
+        escalation: run.context.escalation,
+      },
+      null,
+      2,
+    ),
+  );
+  console.log("Stage outputs:");
+  console.log(JSON.stringify(run.stages, null, 2));
+  console.log("Result:");
+  console.log(JSON.stringify(run.result, null, 2));
+  console.log("---");
+}

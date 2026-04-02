@@ -25,16 +25,21 @@ export type RunPolicyReviewerArgs = {
   input: TicketInput;
   evidence: TriageEvidence;
   draft: TriageSpecialistDraft;
-  model: string;
+  model?: string;
   promptMode?: StagePromptMode;
   managedPrompt?: ManagedPromptRef;
 };
+
+function getModel(model?: string): string {
+  return model ?? "gpt-5-mini";
+}
 
 export async function runPolicyReviewer(args: RunPolicyReviewerArgs): Promise<PolicyReviewerDecision> {
   const input = ticketInputSchema.parse(args.input);
   const evidence = triageEvidenceSchema.parse(args.evidence);
   const draft = triageSpecialistDraftSchema.parse(args.draft);
   const promptMode = args.promptMode ?? "local";
+  const model = getModel(args.model);
 
   let messages: ChatCompletionMessageParam[];
 
@@ -68,7 +73,7 @@ export async function runPolicyReviewer(args: RunPolicyReviewerArgs): Promise<Po
   return await parseStructuredResponse({
     client: args.client,
     messages,
-    model: args.model,
+    model,
     schema: policyReviewerDecisionSchema,
     schemaName: "policy_reviewer_decision",
   });

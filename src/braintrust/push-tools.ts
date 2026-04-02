@@ -2,6 +2,8 @@ import { projects } from "braintrust";
 
 import { registerManagedTools } from "./tools.js";
 
+// setup-braintrust rewrites this placeholder into a literal project name before
+// calling `braintrust push`, so the remote tool runtime does not need custom env vars.
 const projectName = process.env.BRAINTRUST_PROJECT ?? "__BRAINTRUST_PROJECT_NAME__";
 
 const ifExistsEnv = process.env.BRAINTRUST_TOOL_IF_EXISTS ?? process.env.BRAINTRUST_IF_EXISTS;

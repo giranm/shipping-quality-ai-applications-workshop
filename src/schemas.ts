@@ -36,13 +36,6 @@ export const recentAccountEventSchema = z.object({
   occurred_at: z.string().min(1),
 });
 
-export const escalationResultSchema = z.object({
-  id: z.string().min(1),
-  queue: z.string().min(1),
-  eta_minutes: z.number().int().positive(),
-  reason: z.string().min(1),
-});
-
 export const triageEvidenceSchema = z.object({
   help_center_results: z.array(helpCenterResultSchema),
   recent_account_events: z.array(recentAccountEventSchema),
@@ -79,8 +72,8 @@ export type TicketInput = z.infer<typeof ticketInputSchema>;
 export type TriageResult = z.infer<typeof triageResultSchema>;
 export type HelpCenterResult = z.infer<typeof helpCenterResultSchema>;
 export type RecentAccountEvent = z.infer<typeof recentAccountEventSchema>;
-export type EscalationResult = z.infer<typeof escalationResultSchema>;
 export type TriageEvidence = z.infer<typeof triageEvidenceSchema>;
 export type TriageSpecialistDraft = z.infer<typeof triageSpecialistDraftSchema>;
+export type PolicyReviewerAction = z.infer<typeof policyReviewerActionSchema>;
 export type PolicyReviewerDecision = z.infer<typeof policyReviewerDecisionSchema>;
 export type ReplyWriterOutput = z.infer<typeof replyWriterOutputSchema>;

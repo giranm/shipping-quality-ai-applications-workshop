@@ -1,12 +1,17 @@
-import { currentSpan, invoke, projects, type Span } from "braintrust";
+import { invoke, projects, type Span } from "braintrust";
 import { spawn } from "node:child_process";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, parse } from "node:path";
 import { z } from "zod/v3";
 
-import { ensureBraintrustProject, type BraintrustIfExists } from "./api.js";
 import { createEscalation, lookupRecentAccountEvents, searchHelpCenter } from "../tools.js";
-import type { EscalationResult, HelpCenterResult, RecentAccountEvent } from "../schemas.js";
+import {
+  type HelpCenterResult,
+  type RecentAccountEvent,
+} from "../schemas.js";
+import type { EscalationResult } from "../tools.js";
+import type { BraintrustIfExists } from "./api.js";
+import { ensureBraintrustProject } from "./api.js";
 
 type BraintrustProject = ReturnType<typeof projects.create>;
 const PUSH_PROJECT_NAME_PLACEHOLDER = "\"__BRAINTRUST_PROJECT_NAME__\"";
@@ -93,14 +98,6 @@ export type InvokeManagedToolArgs = {
   slug: ManagedToolSlug;
 };
 
-function logToolSpanMetadata(data: Record<string, unknown>): void {
-  try {
-    currentSpan()?.log({ metadata: data });
-  } catch {
-    // Best-effort enrichment; tool execution should continue even if metadata logging fails.
-  }
-}
-
 function getManagedToolRegistrations(): ManagedToolRegistration[] {
   return [
     {
@@ -111,21 +108,27 @@ function getManagedToolRegistrations(): ManagedToolRegistration[] {
         project.tools.create({
           name: "Helpr Search Help Center",
           slug: managedToolSlugs.searchHelpCenter,
-          description: "Search the Helpr help center and return the most relevant articles.",
+          description:
+            "Search the Helpr help center and return the most relevant articles for the provided query. Used by the managed triage prompt helpr-triage-specialist.",
           ifExists,
+          tags: [
+            "helpr",
+            "managed",
+            "tool",
+            "tool:retrieval",
+            "used-by:helpr-triage-specialist",
+          ],
+          metadata: {
+            component: "helpr",
+            object_role: "managed_tool",
+            tool_kind: "retrieval",
+            managed_by: "make setup-braintrust",
+            used_by_prompt_slugs: ["helpr-triage-specialist"],
+            used_by_stage_names: ["triage-specialist"],
+          },
           parameters: searchHelpCenterParametersSchema,
           returns: helpCenterResultsSchema,
-          handler: ({ query }) => {
-            const result = searchHelpCenter(query);
-            logToolSpanMetadata({
-              component: "helpr",
-              object_role: "tool_span",
-              tool_slug: managedToolSlugs.searchHelpCenter,
-              query_length: query.length,
-              result_count: result.length,
-            });
-            return result;
-          },
+          handler: ({ query }) => searchHelpCenter(query),
         });
       },
     },
@@ -137,21 +140,27 @@ function getManagedToolRegistrations(): ManagedToolRegistration[] {
         project.tools.create({
           name: "Helpr Lookup Recent Account Events",
           slug: managedToolSlugs.lookupRecentAccountEvents,
-          description: "Return the most recent account events for a customer account when an account ID is available.",
+          description:
+            "Return the most recent account events for a customer account when an account ID is available. Used by the managed triage prompt helpr-triage-specialist.",
           ifExists,
+          tags: [
+            "helpr",
+            "managed",
+            "tool",
+            "tool:retrieval",
+            "used-by:helpr-triage-specialist",
+          ],
+          metadata: {
+            component: "helpr",
+            object_role: "managed_tool",
+            tool_kind: "retrieval",
+            managed_by: "make setup-braintrust",
+            used_by_prompt_slugs: ["helpr-triage-specialist"],
+            used_by_stage_names: ["triage-specialist"],
+          },
           parameters: lookupRecentAccountEventsParametersSchema,
           returns: recentAccountEventsSchema,
-          handler: ({ account_id }) => {
-            const result = lookupRecentAccountEvents(account_id);
-            logToolSpanMetadata({
-              component: "helpr",
-              object_role: "tool_span",
-              tool_slug: managedToolSlugs.lookupRecentAccountEvents,
-              has_account_id: Boolean(account_id),
-              result_count: result.length,
-            });
-            return result;
-          },
+          handler: ({ account_id }) => lookupRecentAccountEvents(account_id),
         });
       },
     },
@@ -163,22 +172,27 @@ function getManagedToolRegistrations(): ManagedToolRegistration[] {
         project.tools.create({
           name: "Helpr Create Escalation",
           slug: managedToolSlugs.createEscalation,
-          description: "Create a support escalation record after the application has decided escalation is required.",
+          description:
+            "Create a support escalation record when the application has already decided an escalation is required. Invoked deterministically by finalize-result rather than directly by the model.",
           ifExists,
+          tags: [
+            "helpr",
+            "managed",
+            "tool",
+            "tool:side-effect",
+            "used-by-stage:finalize-result",
+          ],
+          metadata: {
+            component: "helpr",
+            object_role: "managed_tool",
+            tool_kind: "side_effect",
+            managed_by: "make setup-braintrust",
+            used_by_stage_names: ["finalize-result"],
+            invocation_mode: "app_controlled",
+          },
           parameters: createEscalationParametersSchema,
           returns: escalationResultReturnSchema,
-          handler: ({ reason }) => {
-            const result = createEscalation(reason);
-            logToolSpanMetadata({
-              component: "helpr",
-              object_role: "tool_span",
-              tool_slug: managedToolSlugs.createEscalation,
-              reason_length: reason.length,
-              queue: result.queue,
-              eta_minutes: result.eta_minutes,
-            });
-            return result;
-          },
+          handler: ({ reason }) => createEscalation(reason),
         });
       },
     },
@@ -308,8 +322,8 @@ export async function setupBraintrustTools(
   };
 
   if (options?.dryRun) {
-    options?.onLog?.(`Preflight: would ensure Braintrust project "${config.projectName}" exists for tools.`);
-    options?.onLog?.(`Preflight: would push ${tools.length} managed tool(s) with ifExists=${ifExists}.`);
+    options.onLog?.(`Preflight: would ensure Braintrust project "${config.projectName}" exists for tools.`);
+    options.onLog?.(`Preflight: would push ${tools.length} managed tool(s) with ifExists=${ifExists}.`);
     return result;
   }
 

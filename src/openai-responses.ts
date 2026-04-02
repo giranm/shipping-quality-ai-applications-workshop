@@ -4,8 +4,11 @@ import type {
   ChatCompletionFunctionTool,
   ChatCompletionMessageParam,
   ChatCompletionTool,
-} from "openai/resources/chat/completions/completions";
-import type { FunctionTool, ResponseInputItem } from "openai/resources/responses/responses";
+} from "openai/resources/chat/completions";
+import type {
+  FunctionTool,
+  ResponseInputItem,
+} from "openai/resources/responses/responses";
 import { z } from "zod";
 
 type StructuredResponseArgs<Schema extends z.ZodTypeAny> = {
@@ -36,7 +39,7 @@ function extractTextContent(
 export function chatMessagesToResponseInput(messages: ChatCompletionMessageParam[]): ResponseInputItem[] {
   return messages.map((message) => {
     if (message.role === "tool") {
-      throw new Error("Tool-role messages are not supported in phase 06.");
+      throw new Error("Tool-role messages are not supported by chatMessagesToResponseInput.");
     }
 
     const role = message.role === "function" ? "assistant" : message.role;

@@ -1,17 +1,10 @@
 import { flush, initLogger, startSpan, withCurrent, wrapOpenAI, type Span } from "braintrust";
 import OpenAI from "openai";
 
+import { getBraintrustProjectName } from "./config.js";
 import type { TicketInput } from "../schemas.js";
 
 let loggerInitialized = false;
-
-type SpanArgs = {
-  name: string;
-  type?: "task" | "tool";
-  input?: unknown;
-  metadata?: Record<string, unknown>;
-  tags?: string[];
-};
 
 function serializeError(error: unknown): string {
   if (error instanceof Error) {
@@ -22,7 +15,7 @@ function serializeError(error: unknown): string {
 }
 
 export function isBraintrustEnabled(): boolean {
-  return Boolean(process.env.BRAINTRUST_API_KEY && process.env.BRAINTRUST_PROJECT);
+  return Boolean(process.env.BRAINTRUST_API_KEY && getBraintrustProjectName());
 }
 
 function ensureLogger(): boolean {
@@ -32,7 +25,7 @@ function ensureLogger(): boolean {
 
   if (!loggerInitialized) {
     initLogger({
-      projectName: process.env.BRAINTRUST_PROJECT,
+      projectName: getBraintrustProjectName(),
       apiKey: process.env.BRAINTRUST_API_KEY,
       asyncFlush: false,
     });
@@ -63,9 +56,12 @@ export function buildTicketMetadata(input: TicketInput, extra: Record<string, un
   };
 }
 
-export function buildSupportTriageTags(...tags: string[]): string[] {
-  return [...new Set(["helpr", "workflow:support-triage", ...tags].filter(Boolean))];
-}
+type SpanArgs = {
+  name: string;
+  type?: "task" | "tool";
+  input?: unknown;
+  metadata?: Record<string, unknown>;
+};
 
 export async function withTrace<T>(
   args: SpanArgs,
@@ -81,13 +77,14 @@ export async function withTrace<T>(
     event: {
       input: args.input,
       metadata: args.metadata,
-      tags: args.tags,
     },
   });
 
   try {
     const output = await withCurrent(span, () => callback(span));
-    span.log({ output });
+    span.log({
+      output,
+    });
     return output;
   } catch (error) {
     span.log({
@@ -115,7 +112,9 @@ export async function withChildSpan<T>(
   return await parent.traced(async (span) => {
     try {
       const output = await withCurrent(span, () => callback(span));
-      span.log({ output });
+      span.log({
+        output,
+      });
       return output;
     } catch (error) {
       span.log({
@@ -132,7 +131,6 @@ export async function withChildSpan<T>(
     event: {
       input: args.input,
       metadata: args.metadata,
-      tags: args.tags,
     },
   });
 }

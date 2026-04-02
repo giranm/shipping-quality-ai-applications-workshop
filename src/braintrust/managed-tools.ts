@@ -4,8 +4,6 @@ import type {
   ResponseInputItem,
 } from "openai/resources/responses/responses";
 import { zodTextFormat } from "openai/helpers/zod";
-import type OpenAI from "openai";
-import type { Span } from "braintrust";
 
 import {
   triageEvidenceSchema,
@@ -19,6 +17,8 @@ import {
   managedToolSlugs,
 } from "./tools.js";
 import type { ManagedPromptRef } from "../workflow/triage-specialist.js";
+import type OpenAI from "openai";
+import type { Span } from "braintrust";
 import { chatMessagesToResponseInput, chatToolsToResponseTools } from "../openai-responses.js";
 
 type ManagedTriageToolLoopArgs = {

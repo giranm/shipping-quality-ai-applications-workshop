@@ -6,9 +6,9 @@ import { dirname, join, parse } from "node:path";
 import { ensureBraintrustProject, type BraintrustIfExists } from "./api.js";
 
 export const runtimeParametersSlug = "helpr-runtime-config";
-export const defaultRuntimeModel = "gpt-5-mini";
 const PUSH_PROJECT_NAME_PLACEHOLDER = "\"__BRAINTRUST_PROJECT_NAME__\"";
 const PUSH_RUNTIME_MODEL_PLACEHOLDER = "\"__HELPR_RUNTIME_MODEL_DEFAULT__\"";
+export const defaultRuntimeModel = "gpt-5-mini";
 
 export const helprRuntimeParametersSchema = {
   model: {
@@ -33,7 +33,7 @@ export type BraintrustParametersBootstrapResult = {
   ifExists: BraintrustIfExists;
   projectId?: string;
   projectName: string;
-  parameter: {
+  parameters: {
     description: string;
     name: string;
     slug: string;
@@ -64,6 +64,7 @@ async function createGeneratedPushFile(
   );
 
   await writeFile(generatedPath, generatedSource, "utf8");
+
   return generatedPath;
 }
 
@@ -141,7 +142,7 @@ export async function setupBraintrustParameters(
     dryRun: options?.dryRun ?? false,
     ifExists,
     projectName: config.projectName,
-    parameter: {
+    parameters: {
       name: "Helpr Runtime Config",
       slug: runtimeParametersSlug,
       description: "Managed runtime defaults for Helpr demos and evals.",
@@ -154,7 +155,7 @@ export async function setupBraintrustParameters(
   if (options?.dryRun) {
     options.onLog?.(`Preflight: would ensure Braintrust project "${config.projectName}" exists for parameters.`);
     options.onLog?.(
-      `Preflight: would push parameter ${runtimeParametersSlug} with ifExists=${ifExists} and preserveRemoteValues=${preserveRemoteValues}.`,
+      `Preflight: would push parameters ${runtimeParametersSlug} with ifExists=${ifExists} and preserveRemoteValues=${preserveRemoteValues}.`,
     );
     return result;
   }
@@ -171,12 +172,17 @@ export async function setupBraintrustParameters(
     options?.onLog?.(
       `Preflight: preserving remote parameter values for ${runtimeParametersSlug} (model=${existingValues.model}).`,
     );
+  } else if (preserveRemoteValues) {
+    options?.onLog?.(
+      `Preflight: no remote parameter value found for ${runtimeParametersSlug}; using code default model=${result.values.model}.`,
+    );
   } else {
     options?.onLog?.(
-      `Preflight: using code default parameter values for ${runtimeParametersSlug} (model=${result.values.model}).`,
+      `Preflight: forcing code-defined parameter values for ${runtimeParametersSlug} (model=${result.values.model}).`,
     );
   }
 
+  options?.onLog?.(`Publish: pushing parameters ${runtimeParametersSlug} via braintrust push.`);
   await withGeneratedPushFile(
     join(process.cwd(), "src/braintrust/push-parameters.ts"),
     {
@@ -193,6 +199,7 @@ export async function setupBraintrustParameters(
         options?.onLog,
       ),
   );
+  options?.onLog?.(`Publish: completed parameters ${runtimeParametersSlug} for project "${config.projectName}".`);
 
   return result;
 }

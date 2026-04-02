@@ -1,9 +1,8 @@
 import "dotenv/config";
 
-import { getRuntimeMode, runSupportTriageDetailed } from "../src/app.js";
+import { runSupportTriageDetailed } from "../src/app.js";
 import { loadProdFailureRows } from "../src/braintrust/dataset.js";
 import {
-  buildSupportTriageTags,
   buildTicketMetadata,
   createBraintrustOpenAIClient,
   withTrace,
@@ -34,7 +33,6 @@ if (failures.length === 0) {
 }
 
 const client = createBraintrustOpenAIClient();
-const runtimeMode = getRuntimeMode();
 
 console.log(
   `Replaying ${failures.length} failure case(s)${failureMatch ? ` matching ${JSON.stringify(failureMatch)}` : ""}.`,
@@ -45,18 +43,9 @@ for (const input of failures) {
     {
       name: "replay-prod-failure",
       input,
-      metadata: buildTicketMetadata(input, {
-        source: "prod_failure_replay",
-        runtime_mode: runtimeMode,
-      }),
-      tags: buildSupportTriageTags("entrypoint:replay-failure", `runtime_mode:${runtimeMode}`),
+      metadata: buildTicketMetadata(input, { source: "prod_failure_replay" }),
     },
-    async (span) =>
-      runSupportTriageDetailed(input, {
-        client,
-        parentSpan: span,
-        runtimeMode,
-      }),
+    async (span) => runSupportTriageDetailed(input, { client, parentSpan: span }),
   );
 
   console.log("Failure replay input:");
@@ -67,8 +56,10 @@ for (const input of failures) {
       {
         runtime_mode: run.context.runtime_mode,
         stage_prompt_modes: run.context.stage_prompt_modes,
+        reviewer_overrode_draft: run.context.reviewer_overrode_draft,
         help_center_results: run.context.help_center_results,
         recent_account_events: run.context.recent_account_events,
+        escalation: run.context.escalation,
       },
       null,
       2,

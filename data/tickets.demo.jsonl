@@ -1,0 +1,4 @@
+{"ticket":"After upgrading from Pro to Enterprise, our billing admin can no longer export invoices. This is blocking finance close today.","customer_tier":"enterprise","account_id":"acct_104","product_area":"billing"}
+{"ticket":"We changed our company domain yesterday and now SSO is failing for all admins.","customer_tier":"enterprise","account_id":"acct_201","product_area":"auth"}
+{"ticket":"Our API requests started timing out after we launched a new automation job.","customer_tier":"pro","account_id":"acct_309","product_area":"api"}
+{"ticket":"The billing page looks different after the upgrade and I cannot find export anymore.","customer_tier":"enterprise","account_id":"acct_104","product_area":"billing"}

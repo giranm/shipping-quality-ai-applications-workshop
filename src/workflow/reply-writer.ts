@@ -22,15 +22,22 @@ export type RunReplyWriterArgs = {
   client: OpenAI;
   input: TicketInput;
   reviewedDecision: PolicyReviewerDecision;
-  model: string;
+  model?: string;
+  replyStyle?: "concise" | "standard";
   promptMode?: StagePromptMode;
   managedPrompt?: ManagedPromptRef;
 };
+
+function getModel(model?: string): string {
+  return model ?? "gpt-5-mini";
+}
 
 export async function runReplyWriter(args: RunReplyWriterArgs): Promise<ReplyWriterOutput> {
   const input = ticketInputSchema.parse(args.input);
   const reviewedDecision = policyReviewerDecisionSchema.parse(args.reviewedDecision);
   const promptMode = args.promptMode ?? "local";
+  const replyStyle = args.replyStyle ?? "concise";
+  const model = getModel(args.model);
 
   let messages: ChatCompletionMessageParam[];
 
@@ -44,7 +51,7 @@ export async function runReplyWriter(args: RunReplyWriterArgs): Promise<ReplyWri
       slug: args.managedPrompt.slug,
       apiKey: args.managedPrompt.apiKey,
     });
-    const compiled = prompt.build(buildManagedReplyWriterVariables(input, reviewedDecision), {
+    const compiled = prompt.build(buildManagedReplyWriterVariables(input, reviewedDecision, replyStyle), {
       flavor: "chat",
     });
     messages = compiled.messages as ChatCompletionMessageParam[];
@@ -56,7 +63,7 @@ export async function runReplyWriter(args: RunReplyWriterArgs): Promise<ReplyWri
       },
       {
         role: "user",
-        content: buildLocalReplyWriterUserPrompt(input, reviewedDecision),
+        content: buildLocalReplyWriterUserPrompt(input, reviewedDecision, replyStyle),
       },
     ];
   }
@@ -64,7 +71,7 @@ export async function runReplyWriter(args: RunReplyWriterArgs): Promise<ReplyWri
   return await parseStructuredResponse({
     client: args.client,
     messages,
-    model: args.model,
+    model,
     schema: replyWriterOutputSchema,
     schemaName: "reply_writer_output",
   });

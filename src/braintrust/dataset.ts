@@ -3,8 +3,8 @@ import { readFile } from "node:fs/promises";
 import { initDataset } from "braintrust";
 import { z } from "zod";
 
-import { ticketInputSchema, triageResultSchema, type TicketInput } from "../schemas.js";
 import { getBraintrustDatasetName, getBraintrustProjectName } from "./config.js";
+import { ticketInputSchema, triageResultSchema, type TicketInput } from "../schemas.js";
 
 const evalExpectedSchema = triageResultSchema.pick({
   category: true,
@@ -13,7 +13,6 @@ const evalExpectedSchema = triageResultSchema.pick({
 });
 
 const evalRowSchema = z.object({
-  id: z.string().min(1),
   input: ticketInputSchema,
   expected: evalExpectedSchema,
   metadata: z.record(z.string(), z.unknown()).default({}),
@@ -62,11 +61,9 @@ export async function seedBraintrustDataset(rows: EvalRow[]) {
 
   for (const row of rows) {
     dataset.insert({
-      id: row.id,
       input: row.input,
       expected: row.expected,
       metadata: row.metadata,
-      tags: ["helpr", "seed", `difficulty:${String(row.metadata.difficulty ?? "unknown")}`],
     });
   }
 

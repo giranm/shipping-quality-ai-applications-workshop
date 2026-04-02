@@ -2,35 +2,58 @@ import type { Span } from "braintrust";
 import OpenAI from "openai";
 
 import { getBraintrustProjectName, requireBraintrustProjectName } from "./braintrust/config.js";
-import {
-  invokeManagedCreateEscalation,
-  invokeManagedLookupRecentAccountEvents,
-  invokeManagedSearchHelpCenter,
-} from "./braintrust/tools.js";
 import { loadHelprRuntimeParameters } from "./braintrust/parameters.js";
 import { managedPromptSlugs } from "./braintrust/prompts.js";
-import { buildSupportTriageTags, createBraintrustOpenAIClient, withChildSpan } from "./braintrust/tracing.js";
-import { type PromptContext } from "./prompts.js";
-import { ticketInputSchema, type EscalationResult, type TicketInput, type TriageResult } from "./schemas.js";
-import { createEscalation, lookupRecentAccountEvents, searchHelpCenter } from "./tools.js";
+import { invokeManagedCreateEscalation } from "./braintrust/tools.js";
+import {
+  type PolicyReviewerDecision,
+  type ReplyWriterOutput,
+  ticketInputSchema,
+  type TicketInput,
+  type TriageEvidence,
+  type TriageSpecialistDraft,
+  type TriageResult,
+} from "./schemas.js";
+import { createBraintrustOpenAIClient, withChildSpan } from "./braintrust/tracing.js";
+import {
+  createEscalation,
+  lookupRecentAccountEvents,
+  searchHelpCenter,
+  type EscalationResult,
+} from "./tools.js";
 import { collectContext } from "./workflow/collect-context.js";
 import { finalizeResult } from "./workflow/finalize-result.js";
 import { runPolicyReviewer } from "./workflow/policy-reviewer.js";
 import { runReplyWriter } from "./workflow/reply-writer.js";
 import {
-  type ManagedPromptRef,
   runTriageSpecialist,
+  type ManagedPromptRef,
   type StagePromptMode,
 } from "./workflow/triage-specialist.js";
 
 export type RuntimeMode = "local" | "managed";
-
 export type RunSupportTriageOptions = {
   client?: OpenAI;
   model?: string;
   runtimeMode?: RuntimeMode;
   parentSpan?: Span | null;
 };
+
+function getModel(model?: string): string {
+  return model ?? process.env.OPENAI_MODEL ?? "gpt-5-mini";
+}
+
+function getRuntimeMode(runtimeMode?: RuntimeMode): RuntimeMode {
+  return runtimeMode ?? ((process.env.RUNTIME_MODE as RuntimeMode | undefined) ?? "local");
+}
+
+function createClient(client?: OpenAI): OpenAI {
+  if (client) {
+    return client;
+  }
+
+  return createBraintrustOpenAIClient();
+}
 
 type StageName = "triage_specialist" | "policy_reviewer" | "reply_writer";
 
@@ -45,36 +68,11 @@ type RuntimeSettings = {
   model: string;
 };
 
-export type SupportTriageRun = {
-  input: TicketInput;
-  context: PromptContext & {
-    runtime_mode: RuntimeMode;
-    stage_prompt_modes: Record<StageName, StagePromptMode>;
-  };
-  stages: {
-    triage_specialist: Awaited<ReturnType<typeof runTriageSpecialist>>["draft"];
-    policy_reviewer: Awaited<ReturnType<typeof runPolicyReviewer>>;
-    reply_writer: Awaited<ReturnType<typeof runReplyWriter>>;
-  };
-  escalation: EscalationResult | null;
-  result: TriageResult;
+type SupportTriageStages = {
+  triage_specialist: TriageSpecialistDraft;
+  policy_reviewer: PolicyReviewerDecision;
+  reply_writer: ReplyWriterOutput;
 };
-
-function createClient(client?: OpenAI): OpenAI {
-  if (client) {
-    return client;
-  }
-
-  return createBraintrustOpenAIClient();
-}
-
-function getModel(model?: string): string {
-  return model ?? process.env.OPENAI_MODEL ?? "gpt-5-mini";
-}
-
-export function getRuntimeMode(runtimeMode?: RuntimeMode): RuntimeMode {
-  return runtimeMode ?? ((process.env.RUNTIME_MODE as RuntimeMode | undefined) ?? "local");
-}
 
 function buildManagedPromptRef(slug?: string): ManagedPromptRef | undefined {
   const projectName = getBraintrustProjectName();
@@ -102,26 +100,34 @@ function buildStagePromptConfigs(runtimeMode: RuntimeMode): StagePromptConfigMap
   requireBraintrustProjectName();
 
   const triagePrompt = buildManagedPromptRef(managedPromptSlugs.triageSpecialist);
-  const policyPrompt = buildManagedPromptRef(managedPromptSlugs.policyReviewer);
-  const replyPrompt = buildManagedPromptRef(managedPromptSlugs.replyWriter);
-
-  if (!triagePrompt || !policyPrompt || !replyPrompt) {
+  if (!triagePrompt) {
     throw new Error("Managed prompt slugs require BRAINTRUST_PROJECT when RUNTIME_MODE=managed.");
   }
+
+  const policyPrompt = buildManagedPromptRef(managedPromptSlugs.policyReviewer);
+  const replyPrompt = buildManagedPromptRef(managedPromptSlugs.replyWriter);
 
   return {
     triage_specialist: {
       promptMode: "managed",
       managedPrompt: triagePrompt,
     },
-    policy_reviewer: {
-      promptMode: "managed",
-      managedPrompt: policyPrompt,
-    },
-    reply_writer: {
-      promptMode: "managed",
-      managedPrompt: replyPrompt,
-    },
+    policy_reviewer: policyPrompt
+      ? {
+          promptMode: "managed",
+          managedPrompt: policyPrompt,
+        }
+      : {
+          promptMode: "local",
+        },
+    reply_writer: replyPrompt
+      ? {
+          promptMode: "managed",
+          managedPrompt: replyPrompt,
+        }
+      : {
+          promptMode: "local",
+        },
   };
 }
 
@@ -131,6 +137,67 @@ function summarizeStagePromptModes(stagePromptConfigs: StagePromptConfigMap): Re
     policy_reviewer: stagePromptConfigs.policy_reviewer.promptMode,
     reply_writer: stagePromptConfigs.reply_writer.promptMode,
   };
+}
+
+async function runCollectContextStage(
+  input: TicketInput,
+  runtimeMode: RuntimeMode,
+  parentSpan?: Span | null,
+): Promise<TriageEvidence> {
+  if (runtimeMode === "managed") {
+    return withChildSpan(
+      parentSpan,
+      {
+        name: "collect-context",
+        metadata: {
+          strategy: "deferred_to_managed_triage_tools",
+        },
+      },
+      async () => ({
+        help_center_results: [],
+        recent_account_events: [],
+      }),
+    );
+  }
+
+  return withChildSpan(
+    parentSpan,
+    {
+      name: "collect-context",
+      input: {
+        account_id: input.account_id ?? null,
+        product_area: input.product_area ?? null,
+      },
+    },
+    async (stageSpan) =>
+      collectContext({
+        input,
+        dependencies: {
+          searchHelpCenter: async (query) =>
+            withChildSpan(
+              stageSpan,
+              {
+                name: "search-help-center",
+                type: "tool",
+                input: { query },
+              },
+              async () => searchHelpCenter(query),
+            ),
+          lookupRecentAccountEvents: async (accountId) =>
+            withChildSpan(
+              stageSpan,
+              {
+                name: "lookup-recent-account-events",
+                type: "tool",
+                input: {
+                  account_id: accountId ?? null,
+                },
+              },
+              async () => lookupRecentAccountEvents(accountId),
+            ),
+        },
+      }),
+  );
 }
 
 async function resolveRuntimeSettings(
@@ -151,147 +218,17 @@ async function resolveRuntimeSettings(
   };
 }
 
-async function runCollectContextStage(
-  input: TicketInput,
-  runtimeMode: RuntimeMode,
-  parentSpan?: Span | null,
-): Promise<PromptContext> {
-  if (runtimeMode === "managed") {
-    const projectName = requireBraintrustProjectName();
-    return withChildSpan(
-      parentSpan,
-      {
-        name: "collect-context",
-        input: {
-          account_id: input.account_id ?? null,
-          product_area: input.product_area ?? null,
-        },
-        metadata: {
-          runtime_mode: runtimeMode,
-          collection_mode: "managed_tools",
-        },
-        tags: buildSupportTriageTags(`runtime_mode:${runtimeMode}`, "stage:collect-context"),
-      },
-      async (stageSpan) => ({
-        help_center_results: await withChildSpan(
-          stageSpan,
-          {
-            name: "search-help-center",
-            type: "tool",
-            input: {
-              query: [input.product_area, input.ticket].filter(Boolean).join(": "),
-            },
-            metadata: {
-              runtime_mode: runtimeMode,
-              tool_mode: "managed",
-            },
-            tags: buildSupportTriageTags(
-              `runtime_mode:${runtimeMode}`,
-              "stage:collect-context",
-              "tool:search-help-center",
-            ),
-          },
-          async (toolSpan) =>
-            invokeManagedSearchHelpCenter(
-              projectName,
-              [input.product_area, input.ticket].filter(Boolean).join(": "),
-              toolSpan,
-            ),
-        ),
-        recent_account_events: await withChildSpan(
-          stageSpan,
-          {
-            name: "lookup-recent-account-events",
-            type: "tool",
-            input: {
-              account_id: input.account_id ?? null,
-            },
-            metadata: {
-              runtime_mode: runtimeMode,
-              tool_mode: "managed",
-            },
-            tags: buildSupportTriageTags(
-              `runtime_mode:${runtimeMode}`,
-              "stage:collect-context",
-              "tool:lookup-recent-account-events",
-            ),
-          },
-          async (toolSpan) =>
-            invokeManagedLookupRecentAccountEvents(projectName, input.account_id, toolSpan),
-        ),
-      }),
-    );
-  }
-
-  return withChildSpan(
-    parentSpan,
-    {
-      name: "collect-context",
-      input: {
-        account_id: input.account_id ?? null,
-        product_area: input.product_area ?? null,
-      },
-      metadata: {
-        runtime_mode: runtimeMode,
-        collection_mode: "local_tools",
-      },
-      tags: buildSupportTriageTags(`runtime_mode:${runtimeMode}`, "stage:collect-context"),
-    },
-    async (stageSpan) =>
-      collectContext({
-        input,
-        dependencies: {
-          searchHelpCenter: async (query) =>
-            withChildSpan(
-              stageSpan,
-              {
-                name: "search-help-center",
-                type: "tool",
-                input: { query },
-                metadata: {
-                  runtime_mode: runtimeMode,
-                  tool_mode: "local",
-                },
-                tags: buildSupportTriageTags(
-                  `runtime_mode:${runtimeMode}`,
-                  "stage:collect-context",
-                  "tool:search-help-center",
-                ),
-              },
-              async () => searchHelpCenter(query),
-            ),
-          lookupRecentAccountEvents: async (accountId) =>
-            withChildSpan(
-              stageSpan,
-              {
-                name: "lookup-recent-account-events",
-                type: "tool",
-                input: {
-                  account_id: accountId ?? null,
-                },
-                metadata: {
-                  runtime_mode: runtimeMode,
-                  tool_mode: "local",
-                },
-                tags: buildSupportTriageTags(
-                  `runtime_mode:${runtimeMode}`,
-                  "stage:collect-context",
-                  "tool:lookup-recent-account-events",
-                ),
-              },
-              async () => lookupRecentAccountEvents(accountId),
-            ),
-        },
-      }),
-  );
-}
-
-export async function runSupportTriage(
-  input: TicketInput,
-  options: RunSupportTriageOptions = {},
-): Promise<TriageResult> {
-  return (await runSupportTriageDetailed(input, options)).result;
-}
+export type SupportTriageRun = {
+  input: TicketInput;
+  context: TriageEvidence & {
+    escalation: EscalationResult | null;
+    runtime_mode: RuntimeMode;
+    reviewer_overrode_draft: boolean;
+    stage_prompt_modes: Record<StageName, StagePromptMode>;
+  };
+  stages: SupportTriageStages;
+  result: TriageResult;
+};
 
 export async function runSupportTriageDetailed(
   input: TicketInput,
@@ -303,23 +240,15 @@ export async function runSupportTriageDetailed(
   const stagePromptConfigs = buildStagePromptConfigs(runtimeMode);
   const stagePromptModes = summarizeStagePromptModes(stagePromptConfigs);
   const runtimeSettings = await resolveRuntimeSettings(runtimeMode, options);
+
   const context = await runCollectContextStage(parsedInput, runtimeMode, options.parentSpan);
-  const triageDraft = await withChildSpan(
+  const triageSpecialist = await withChildSpan(
     options.parentSpan,
     {
       name: "triage-specialist",
-      input: {
-        product_area: parsedInput.product_area ?? null,
-      },
       metadata: {
-        runtime_mode: runtimeMode,
         prompt_mode: stagePromptModes.triage_specialist,
       },
-      tags: buildSupportTriageTags(
-        `runtime_mode:${runtimeMode}`,
-        "stage:triage-specialist",
-        `prompt_mode:${stagePromptModes.triage_specialist}`,
-      ),
     },
     async () =>
       runTriageSpecialist({
@@ -333,61 +262,41 @@ export async function runSupportTriageDetailed(
   );
   const effectiveEvidence =
     runtimeMode === "managed" &&
-    (triageDraft.collectedEvidence.help_center_results.length > 0 ||
-      triageDraft.collectedEvidence.recent_account_events.length > 0)
-      ? triageDraft.collectedEvidence
+    (triageSpecialist.collectedEvidence.help_center_results.length > 0 ||
+      triageSpecialist.collectedEvidence.recent_account_events.length > 0)
+      ? triageSpecialist.collectedEvidence
       : context;
-  const reviewedDecision = await withChildSpan(
+  const policyReviewer = await withChildSpan(
     options.parentSpan,
     {
       name: "policy-reviewer",
-      input: {
-        should_escalate: triageDraft.draft.should_escalate,
-        severity: triageDraft.draft.severity,
-      },
       metadata: {
-        runtime_mode: runtimeMode,
         prompt_mode: stagePromptModes.policy_reviewer,
       },
-      tags: buildSupportTriageTags(
-        `runtime_mode:${runtimeMode}`,
-        "stage:policy-reviewer",
-        `prompt_mode:${stagePromptModes.policy_reviewer}`,
-      ),
     },
     async () =>
       runPolicyReviewer({
         client,
         input: parsedInput,
         evidence: effectiveEvidence,
-        draft: triageDraft.draft,
+        draft: triageSpecialist.draft,
         model: runtimeSettings.model,
         ...stagePromptConfigs.policy_reviewer,
       }),
   );
-  const reply = await withChildSpan(
+  const replyWriter = await withChildSpan(
     options.parentSpan,
     {
       name: "reply-writer",
-      input: {
-        category: reviewedDecision.category,
-        severity: reviewedDecision.severity,
-      },
       metadata: {
-        runtime_mode: runtimeMode,
         prompt_mode: stagePromptModes.reply_writer,
       },
-      tags: buildSupportTriageTags(
-        `runtime_mode:${runtimeMode}`,
-        "stage:reply-writer",
-        `prompt_mode:${stagePromptModes.reply_writer}`,
-      ),
     },
     async () =>
       runReplyWriter({
         client,
         input: parsedInput,
-        reviewedDecision,
+        reviewedDecision: policyReviewer,
         model: runtimeSettings.model,
         ...stagePromptConfigs.reply_writer,
       }),
@@ -397,55 +306,62 @@ export async function runSupportTriageDetailed(
     {
       name: "finalize-result",
       metadata: {
-        runtime_mode: runtimeMode,
-        reviewer_action: reviewedDecision.reviewer_action,
+        reviewer_action: policyReviewer.reviewer_action,
       },
-      tags: buildSupportTriageTags(`runtime_mode:${runtimeMode}`, "stage:finalize-result"),
     },
-    async (stageSpan) =>
-      finalizeResult({
-        reviewedDecision,
-        reply,
-        dependencies: {
-          createEscalation: async (reason) =>
-            withChildSpan(
-              stageSpan,
-              {
-                name: "create-escalation",
-                type: "tool",
-                input: { reason },
-                metadata: {
-                  runtime_mode: runtimeMode,
-                  tool_mode: "local",
-                },
-                tags: buildSupportTriageTags(
-                  `runtime_mode:${runtimeMode}`,
-                  "stage:finalize-result",
-                  "tool:create-escalation",
-                ),
-              },
-              async () =>
-                runtimeMode === "managed"
-                  ? invokeManagedCreateEscalation(requireBraintrustProjectName(), reason, stageSpan)
-                  : createEscalation(reason),
-            ),
-        },
-      }),
+    async (stageSpan) => {
+      const result = finalizeResult({
+        reviewedDecision: policyReviewer,
+        reply: replyWriter,
+      });
+      let escalation: EscalationResult | null = null;
+
+      if (result.should_escalate) {
+        const reason = result.escalation_reason.trim() || result.recommended_action;
+        escalation = await withChildSpan(
+          stageSpan,
+          {
+            name: "create-escalation",
+            type: "tool",
+            input: {
+              reason,
+            },
+          },
+          async () =>
+            runtimeMode === "managed"
+              ? invokeManagedCreateEscalation(requireBraintrustProjectName(), reason, stageSpan)
+              : createEscalation(reason),
+        );
+      }
+
+      return {
+        result,
+        escalation,
+      };
+    },
   );
 
   return {
     input: parsedInput,
     context: {
       ...effectiveEvidence,
+      escalation: finalized.escalation,
       runtime_mode: runtimeMode,
+      reviewer_overrode_draft: policyReviewer.reviewer_action === "revised",
       stage_prompt_modes: stagePromptModes,
     },
     stages: {
-      triage_specialist: triageDraft.draft,
-      policy_reviewer: reviewedDecision,
-      reply_writer: reply,
+      triage_specialist: triageSpecialist.draft,
+      policy_reviewer: policyReviewer,
+      reply_writer: replyWriter,
     },
-    escalation: finalized.escalation,
     result: finalized.result,
   };
+}
+
+export async function runSupportTriage(
+  input: TicketInput,
+  options: RunSupportTriageOptions = {},
+): Promise<TriageResult> {
+  return (await runSupportTriageDetailed(input, options)).result;
 }
