@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 -5 960 470" width="960" height="470" style="background: transparent;">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&amp;display=swap');
+    </style>
+  </defs>
+  <g>
+  <path d="M 269.25049306126334,30.036880653019473
+    C 309.0130677842871,29.644958311177305 339.81433595696666,41.856598119169696 340.71381082151265,57.518477162704094
+    C 340.04567356770656,72.32348306377214 308.07056336786115,85.47323144028114 270.60081680507903,84.92804296323007
+    C 230.9581505218051,84.62111218011525 199.53241119686626,72.4228163508023 199.4051859975584,57.961060963669354
+    C 200.05161639084184,42.82885025921125 231.69559601398024,29.367499167852802 270.0585141020401,29.446512987928703
+    Z" fill="#ffffff" stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 388.54378811772625,29.946894624827845
+    L 556.9579594816119,29.925007450010167
+    Q 565.6231587288776,30.428756246193664 565.1062297769153,38.403860614939525
+    L 565.1853552886449,76.76633625571445
+    Q 564.8134497928263,84.65066803148979 556.7776052488608,85.211417603987
+    L 387.79567020947377,84.32921062576548
+    Q 380.042987240382,84.48654910025026 379.93072790614366,76.7439185560187
+    L 379.2845386008427,38.74026436358237
+    Q 379.5391710061995,29.347101195294922 388.54378811772625,29.946894624827845
+    Z" fill="#e9ecef" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 340.4865262145114,57.04608729274295 Q 359.17825826172634,57.98660483490052 379.93373008651366,57.20156403523943" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 370.2930131405663,60.47267983155327 L 380,57 L 371.1017027496472,53.26098350469657" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="270" y="58" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="18" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">Ticket Input</text>
+  <text x="472" y="58" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">1. collect-context</text>
+  <text x="472.5" y="100" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">deterministic</text>
+  </g>
+</svg>

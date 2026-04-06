@@ -1,0 +1,217 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "workshop-slides",
+  "elements": [
+    {
+      "id": "trace_box",
+      "type": "rectangle",
+      "x": 155,
+      "y": 10,
+      "width": 110,
+      "height": 45,
+      "strokeColor": "#2C1FEB",
+      "backgroundColor": "#e8e6fd",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": { "type": 3 },
+      "seed": 1
+    },
+    {
+      "id": "trace_label",
+      "type": "text",
+      "x": 180,
+      "y": 20,
+      "width": 60,
+      "height": 26,
+      "text": "Trace",
+      "fontSize": 18,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "strokeColor": "#2C1FEB",
+      "seed": 2
+    },
+
+    {
+      "id": "dataset_box",
+      "type": "rectangle",
+      "x": 310,
+      "y": 140,
+      "width": 110,
+      "height": 45,
+      "strokeColor": "#2C1FEB",
+      "backgroundColor": "#e8e6fd",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": { "type": 3 },
+      "seed": 3
+    },
+    {
+      "id": "dataset_label",
+      "type": "text",
+      "x": 325,
+      "y": 150,
+      "width": 80,
+      "height": 26,
+      "text": "Dataset",
+      "fontSize": 18,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "strokeColor": "#2C1FEB",
+      "seed": 4
+    },
+
+    {
+      "id": "eval_box",
+      "type": "rectangle",
+      "x": 250,
+      "y": 300,
+      "width": 110,
+      "height": 45,
+      "strokeColor": "#2C1FEB",
+      "backgroundColor": "#e8e6fd",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": { "type": 3 },
+      "seed": 5
+    },
+    {
+      "id": "eval_label",
+      "type": "text",
+      "x": 278,
+      "y": 310,
+      "width": 55,
+      "height": 26,
+      "text": "Eval",
+      "fontSize": 18,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "strokeColor": "#2C1FEB",
+      "seed": 6
+    },
+
+    {
+      "id": "improve_box",
+      "type": "rectangle",
+      "x": 55,
+      "y": 300,
+      "width": 115,
+      "height": 45,
+      "strokeColor": "#2C1FEB",
+      "backgroundColor": "#e8e6fd",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": { "type": 3 },
+      "seed": 7
+    },
+    {
+      "id": "improve_label",
+      "type": "text",
+      "x": 72,
+      "y": 310,
+      "width": 82,
+      "height": 26,
+      "text": "Improve",
+      "fontSize": 18,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "strokeColor": "#2C1FEB",
+      "seed": 8
+    },
+
+    {
+      "id": "test_box",
+      "type": "rectangle",
+      "x": 0,
+      "y": 140,
+      "width": 100,
+      "height": 45,
+      "strokeColor": "#2C1FEB",
+      "backgroundColor": "#e8e6fd",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roundness": { "type": 3 },
+      "seed": 9
+    },
+    {
+      "id": "test_label",
+      "type": "text",
+      "x": 22,
+      "y": 150,
+      "width": 55,
+      "height": 26,
+      "text": "Test",
+      "fontSize": 18,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "strokeColor": "#2C1FEB",
+      "seed": 10
+    },
+
+    {
+      "id": "arr_trace_dataset",
+      "type": "arrow",
+      "x": 265,
+      "y": 50,
+      "width": 65,
+      "height": 90,
+      "points": [[0, 0], [65, 90]],
+      "strokeColor": "#2C1FEB",
+      "strokeWidth": 2,
+      "seed": 101
+    },
+    {
+      "id": "arr_dataset_eval",
+      "type": "arrow",
+      "x": 365,
+      "y": 185,
+      "width": -30,
+      "height": 115,
+      "points": [[0, 0], [-30, 115]],
+      "strokeColor": "#2C1FEB",
+      "strokeWidth": 2,
+      "seed": 102
+    },
+    {
+      "id": "arr_eval_improve",
+      "type": "arrow",
+      "x": 250,
+      "y": 325,
+      "width": -80,
+      "height": 5,
+      "points": [[0, 0], [-80, 5]],
+      "strokeColor": "#2C1FEB",
+      "strokeWidth": 2,
+      "seed": 103
+    },
+    {
+      "id": "arr_improve_test",
+      "type": "arrow",
+      "x": 75,
+      "y": 300,
+      "width": -25,
+      "height": -115,
+      "points": [[0, 0], [-25, -115]],
+      "strokeColor": "#2C1FEB",
+      "strokeWidth": 2,
+      "seed": 104
+    },
+    {
+      "id": "arr_test_trace",
+      "type": "arrow",
+      "x": 100,
+      "y": 145,
+      "width": 55,
+      "height": -85,
+      "points": [[0, 0], [55, -85]],
+      "strokeColor": "#2C1FEB",
+      "strokeWidth": 2,
+      "seed": 105
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "transparent",
+    "gridSize": null
+  },
+  "files": {}
+}

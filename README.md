@@ -84,10 +84,16 @@ Runtime-mode behavior:
 
 - `make setup-braintrust`
 - `make demo`
+- `make deck`
 - `make seed-dataset`
 - `make eval`
 - `make replay-failure`
 - `make typecheck`
+
+## Slides
+
+The workshop deck source lives at `docs/slides/workshop-deck.md`.
+Run `make deck` to rebuild `docs/index.html` for GitHub Pages.
 
 ## Workshop flow
 

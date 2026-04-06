@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 -5 960 470" width="960" height="470" style="background: transparent;">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&amp;display=swap');
+    </style>
+  </defs>
+  <g>
+  <line x1="819.6002629660071" y1="96.01966968161038" x2="790.1883388257531" y2="169.8106444326279" stroke="#2C1FEB" stroke-width="1" stroke-dasharray="6 4" stroke-linecap="round"/>
+  <line x1="819.9009791770488" y1="100.75702866062383" x2="595.3806991048067" y2="170.0098544867755" stroke="#2C1FEB" stroke-width="1" stroke-dasharray="6 4" stroke-linecap="round"/>
+  <line x1="820.0243592361102" y1="105.8056813036118" x2="379.68566980365927" y2="170.2523901014833" stroke="#2C1FEB" stroke-width="1" stroke-dasharray="6 4" stroke-linecap="round"/>
+  <line x1="820.3204356293755" y1="165.9616229137227" x2="379.79631093749606" y2="169.79792649606145" stroke="#2C1FEB" stroke-width="1" stroke-dasharray="6 4" stroke-linecap="round"/>
+  <line x1="819.7506193049953" y1="176.85865905669456" x2="549.6827658653644" y2="414.24589918062367" stroke="#2C1FEB" stroke-width="1" stroke-dasharray="6 4" stroke-linecap="round"/>
+  <line x1="820.0275287417824" y1="306.27556313531267" x2="700.1896151999895" y2="286.66266622285485" stroke="#2C1FEB" stroke-width="1" stroke-dasharray="6 4" stroke-linecap="round"/>
+  <path d="M 270.0585141020401,29.446512987928703
+    C 309.20372060372625,29.946894624827845 339.95795948161185,42.237176830510165 339.60021232084847,56.7684765001845
+    C 339.2845386008427,73.42809498308237 309.28309121487763,85.42875624619366 270.10622977691526,85.40386061493953
+    C 231.52542280264495,84.76633625571445 199.8134497928263,72.33849865098979 199.77760524886082,57.711417603986995
+    C 199.79567020947377,41.64138000626548 231.383054754382,29.48654910025026 269.93072790614366,29.743918556018695
+    Z" fill="#ffffff" stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 387.5391710061995,29.347101195294922
+    L 557.729789321767,30.069130939114434
+    Q 564.5301104035601,30.065552635498136 565.7431448171815,37.53494236887663
+    L 565.2763937094837,76.84907529321455
+    Q 564.9084530571282,85.37053115392129 556.5171039550412,85.46617237744675
+    L 388.4591477474706,84.39619173838113
+    Q 379.2945469718168,84.45095532536551 380.2061534181499,76.82049884487432
+    L 379.9005951297705,38.30234605285914
+    Q 379.6240858027591,30.010086971921886 387.5391710061995,29.347101195294922
+    Z" fill="#e9ecef" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 208.03173709115094,139.40529097391072
+    L 372.72539851766794,139.77288644552365
+    Q 379.9495693006085,139.911235327209 380.6321444014936,147.950955902087
+    L 380.71584637647766,191.7300494601857
+    Q 380.44127734130774,200.54827535911383 372.36396062612255,200.08624324125063
+    L 208.49015569930904,200.04683828693666
+    Q 199.711088544671,199.7651702854853 199.71698815141198,191.91986078124953
+    L 200.24966518022106,148.6226839750878
+    Q 200.10015046077322,140.22879421547 208.03173709115094,139.40529097391072
+    Z" fill="#e8e6fd" stroke="#2C1FEB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 427.344379404138,139.98464534768584
+    L 586.9343585561422,139.26425308269182
+    Q 594.437727877492,139.89243700734454 594.6887824395386,147.86646132595672
+    L 594.6155053546491,191.7984955883811
+    Q 595.3153539207137,200.65334543511426 586.2767279655797,199.96691749813823
+    L 428.482391209217,200.04905330962458
+    Q 419.4389748602123,199.85047558792888 419.4432063208396,192.46863435055997
+    L 419.92033999211634,148.65424749972496
+    Q 419.837529861409,139.36438070103264 427.344379404138,139.98464534768584
+    Z" fill="#e8e6fd" stroke="#2C1FEB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 643.1464422556555,139.75499080214882
+    L 781.630411715191,139.82969721596675
+    Q 790.7336850466596,139.5445792085 790.2427572598647,148.02126654622668
+    L 790.4268424320858,191.44075606632546
+    Q 789.7872067322196,199.58354841560757 781.6982211163026,199.50230169843525
+    L 643.6846456010521,200.3386168836563
+    Q 635.1339636113886,200.02641660756265 634.9839233054006,191.79899386807764
+    L 634.5563263340417,147.67669623877234
+    Q 634.6899407808389,139.83470355979387 643.1464422556555,139.75499080214882
+    Z" fill="#e8e6fd" stroke="#2C1FEB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 207.86272945539687,259.8939568552393
+    L 366.73286600736105,259.77898571688166
+    Q 374.77679269180015,260.0547710856445 374.5376364271099,268.5554304359506
+    L 375.61933702177805,307.69732502333227
+    Q 375.44166714590585,314.59972123980975 367.01487748244074,314.5458473813701
+    L 208.55693868678387,315.46850877637905
+    Q 200.72700460277358,314.76635881560685 200.1926139043377,307.2618902034647
+    L 199.86403077310604,267.2652035933059
+    Q 200.58864963163558,259.4343588993346 207.86272945539687,259.8939568552393
+    Z" fill="#e9ecef" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 462.770021116836,240.7449106627586
+    L 510.71350898359134,286.94548721969846
+    L 462.3037014724937,334.31064820129455
+    L 415.0643191574208,287.0120787714897
+    Z" fill="#fff9e0" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 625.0079124275398,259.4841696630391
+    C 666.8608829334074,259.6252201347962 699.5748055199276,272.0685428048188 700.3681425259533,287.3714336972318
+    C 700.6861493745521,302.80036871732796 666.3491664292864,315.20593537201916 625.6557975259636,314.9890188710946
+    C 583.5188102515158,314.3781388700605 550.3799891069671,302.1647514156983 550.107821704288,287.6593839672438
+    C 549.766337466201,272.14596382021614 583.1617920746505,260.4736402948497 624.9724355389934,260.2241038624077
+    Z" fill="#CCFF00" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 380.01361548563636,389.3354670899387
+    L 550.1953805994453,390.261734878417
+    L 529.4781015542001,438.4528214410892
+    L 359.5699603859428,437.32420654086127
+    Z" fill="#e9ecef" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 32.93933225525046,209.35721399453806
+    L 142.69560620093048,209.05341903856183
+    Q 149.80060814998606,208.82117681581116 150.5187433381885,217.5192849341637
+    L 150.62188848916995,243.07983747931655
+    Q 149.32851487331953,251.3494758815968 141.6411419971339,251.17354582968332
+    L 32.28475948774012,250.95271044816016
+    Q 25.204502227927794,251.56894478240002 24.754957797008082,243.57569431482148
+    L 24.821949064997934,216.99793542025049
+    Q 25.694349204629823,208.92708221342278 32.93933225525046,209.35721399453806
+    Z" fill="#ffffff" stroke="#2C1FEB" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 827.9707609967891,80.58007303431168
+    L 936.2874876763847,79.305376996312
+    Q 945.2471366338418,80.12540497997561 945.1814984501951,87.44445243044498
+    L 945.411998488783,114.45860097427321
+    Q 945.7065746099486,121.89946940594794 936.3823057669831,121.91302568496346
+    L 828.7226871808398,122.70344837450118
+    Q 819.8568302412084,121.74586398876079 820.736059102689,114.44533889307424
+    L 819.8581880522464,88.06659410582697
+    Q 819.8107758986581,79.71052874669458 827.9707609967891,80.58007303431168
+    Z" fill="#ffffff" stroke="#2C1FEB" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 827.356645695682,150.64420732711173
+    L 937.1925467666903,150.6335077627485
+    Q 944.3349017585092,149.6938552637323 944.6254175488723,157.89274389606098
+    L 945.3466610967166,184.33305251602226
+    Q 944.6136367860546,191.89346322051412 937.4363471805985,192.18706432028537
+    L 827.9900310361944,192.4516253197573
+    Q 820.46674916135,191.65315480874997 819.5728706609564,184.23719869460314
+    L 819.4699507896881,157.96292228843689
+    Q 819.5984601950498,149.82049820296024 827.356645695682,150.64420732711173
+    Z" fill="#ffffff" stroke="#2C1FEB" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 827.613297152735,285.18524601656725
+    L 936.4298004452976,285.1560841174359
+    Q 944.8395697344512,285.64852692065693 944.2919554808373,292.3957664315336
+    L 944.6464147855977,319.2933015399814
+    Q 945.5189824675997,327.0383329476641 936.2618513908293,327.4363256670471
+    L 827.8254860604999,326.44421882191403
+    Q 819.4857399092223,326.8306542979929 819.306786366532,318.6584623031823
+    L 820.0514864643577,292.8330064597926
+    Q 820.2759295853441,284.54854087871433 827.613297152735,285.18524601656725
+    Z" fill="#ffffff" stroke="#2C1FEB" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 185,15 Q 167.5,15 167.5,40 L 167.5,205 Q 167.5,230 150,230 Q 167.5,230 167.5,255 L 167.5,420 Q 167.5,445 185,445" fill="none" stroke="#2C1FEB" stroke-width="1.5" stroke-dasharray="6 4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 339.5510323676518,57.20100312433252 Q 360.51902131341353,56.191214541062344 380.37139581743224,57.04950358418259" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 370.6130122283172,60.69734766111929 L 380,57 L 371.0939142656588,53.35993311173868" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 472.2303080296751,84.78705474887371 L 472.02916432057003,112.16473582045396 L 187.71493436964923,111.90195069480778 L 188.0853276343948,170.1015512731865 L 199.77224844520552,170.17961856894178" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 190.45556107590807,173.41582912017742 L 200,170 L 190.61179665538208,166.40925719071268" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 380.220103345681,170.27693086107118 Q 400.75396404683306,169.87373512372082 419.9331121879784,169.81654335293757" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 410.250405693414,173.36931554269822 L 420,170 L 410.8580999628549,167.0289458872292" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 595.3280256990474,170.12792388937805 Q 615.0336175537825,169.01022642199428 635.4377372287855,170.04960419822" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 625.3040323550936,173.67261839061976 L 635,170 L 625.4690649799031,166.5179874156558" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 711.648993964842,199.64156710037102 L 711.8182559359439,230.42751540752477 L 188.2514542689321,230.1918979416098 L 188.22870463585886,286.8388148799254 L 199.96168690568845,287.07182390595403" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 190.75066024133608,290.14750246874746 L 200,287 L 190.84576607289168,283.73325727470495" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 374.6895150035571,286.6786647840304 Q 395.63805039675816,286.7130183143136 415.34940433448617,287.43864970930787" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 405.99193720925325,290.2895022536706 L 415,287 L 405.4361512764163,283.3373729138682" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 510.0610624200483,287.27609375201916 Q 530.6153803717417,287.6979078621128 549.8687192650366,286.56468747046995" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 540.308589059874,290.2571556338968 L 550,287 L 540.786512737865,283.8624554813537" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 462.1237741497456,335.2721347742584 Q 461.5383019226316,362.74041366914304 462.3162686437444,389.52709541238244" fill="none" stroke="#e03131" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 458.46361783702685,380.4657588192206 L 462,390 L 465.8093009741682,380.69324667864265" fill="none" stroke="#e03131" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 549.7687762068905,413.8217092083402 Q 588.4333291491183,364.9630092314738 624.8980766899875,314.97492861956124" fill="none" stroke="#e03131" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 621.6860461193503,324.1260622374819 L 625,315 L 616.2951137931532,320.75656778915067" fill="none" stroke="#e03131" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="270" y="58" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="18" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">Ticket Input</text>
+  <text x="472" y="58" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">1. collect-context</text>
+  <text x="472.5" y="100" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">deterministic</text>
+  <text x="290" y="170" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">2. triage-specialist</text>
+  <text x="290" y="215" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">LLM + tools</text>
+  <text x="507" y="170" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">3. policy-reviewer</text>
+  <text x="507" y="215" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">LLM</text>
+  <text x="712.5" y="170" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">4. reply-writer</text>
+  <text x="712" y="215" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">LLM</text>
+  <text x="287" y="288" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">5. finalize-result</text>
+  <text x="287.5" y="330" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">deterministic</text>
+  <text x="462" y="288" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="14" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">escalate?</text>
+  <text x="530" y="279" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="#595959" text-anchor="middle" dominant-baseline="central">no</text>
+  <text x="624.5" y="288" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="18" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">Final Result</text>
+  <text x="445" y="351" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="#e03131" text-anchor="middle" dominant-baseline="central">yes</text>
+  <text x="455" y="415" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="14" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">create-escalation</text>
+  <text x="87" y="230" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="14" fill="#2C1FEB" text-anchor="middle" dominant-baseline="central">BT Traces</text>
+  <text x="882.5" y="67" font-family="'Cascadia Code', 'Fira Code', monospace" font-size="11" fill="#2C1FEB" text-anchor="middle" dominant-baseline="central">managed mode</text>
+  <text x="882" y="101" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="#2C1FEB" text-anchor="middle" dominant-baseline="central">BT Prompts</text>
+  <text x="882" y="171" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="#2C1FEB" text-anchor="middle" dominant-baseline="central">BT Tools</text>
+  <text x="882" y="307" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#2C1FEB" text-anchor="middle" dominant-baseline="central">Evals + Scorers</text>
+  </g>
+</svg>

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 -5 960 470" width="960" height="470" style="background: transparent;">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&amp;display=swap');
+    </style>
+  </defs>
+  <g>
+  <path d="M 269.25049306126334,30.036880653019473
+    C 309.0130677842871,29.644958311177305 339.81433595696666,41.856598119169696 340.71381082151265,57.518477162704094
+    C 340.04567356770656,72.32348306377214 308.07056336786115,85.47323144028114 270.60081680507903,84.92804296323007
+    C 230.9581505218051,84.62111218011525 199.53241119686626,72.4228163508023 199.4051859975584,57.961060963669354
+    C 200.05161639084184,42.82885025921125 231.69559601398024,29.367499167852802 270.0585141020401,29.446512987928703
+    Z" fill="#ffffff" stroke="#1e1e1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 388.54378811772625,29.946894624827845
+    L 556.9579594816119,29.925007450010167
+    Q 565.6231587288776,30.428756246193664 565.1062297769153,38.403860614939525
+    L 565.1853552886449,76.76633625571445
+    Q 564.8134497928263,84.65066803148979 556.7776052488608,85.211417603987
+    L 387.79567020947377,84.32921062576548
+    Q 380.042987240382,84.48654910025026 379.93072790614366,76.7439185560187
+    L 379.2845386008427,38.74026436358237
+    Q 379.5391710061995,29.347101195294922 388.54378811772625,29.946894624827845
+    Z" fill="#e9ecef" stroke="#595959" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 208.72978932176707,140.06913093911444
+    L 371.38369369629476,140.73995362617538
+    Q 380.7431448171815,139.5349423688766 380.2763937094837,147.84907529321455
+    L 379.9084530571282,192.3705311539213
+    Q 379.5171039550412,200.46617237744675 372.4591477474706,199.39619173838113
+    L 207.29454697181683,199.4509553253655
+    Q 200.20615341814988,199.82049884487432 199.62408580275908,192.01008697192188
+    L 199.53011040356014,148.06555263549814
+    Q 200.03173709115094,139.40529097391072 208.72978932176707,140.06913093911444
+    Z" fill="#e8e6fd" stroke="#2C1FEB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 428.72539851766794,139.77288644552365
+    L 587.4024899160269,139.64801866277028
+    Q 595.6321444014935,139.950955902087 595.7158463764777,147.7300494601857
+    L 595.4412773413077,192.54827535911383
+    Q 595.3639606261225,200.08624324125063 587.4901556993091,200.04683828693666
+    L 427.711088544671,199.7651702854853
+    Q 419.716988151412,199.91986078124953 420.1001504607732,192.22879421547
+    L 419.9495693006085,147.911235327209
+    Q 419.344379404138,139.98464534768584 428.72539851766794,139.77288644552365
+    Z" fill="#e8e6fd" stroke="#2C1FEB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 642.9343585561422,139.26425308269182
+    L 782.301560801245,139.83238652585186
+    Q 789.6887824395386,139.86646132595672 789.6155053546491,147.7984955883811
+    L 790.3153539207137,192.65334543511426
+    Q 789.2767279655797,199.96691749813823 782.482391209217,200.04905330962458
+    L 642.4389748602123,199.85047558792888
+    Q 634.4432063208395,200.46863435055997 634.837529861409,191.36438070103264
+    L 634.437727877492,147.89243700734454
+    Q 635.1464422556555,139.75499080214882 642.9343585561422,139.26425308269182
+    Z" fill="#e8e6fd" stroke="#2C1FEB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 339.7536078101274,56.88646481064449 Q 359.62814500398383,57.23308195603689 379.7042175560278,56.78446415918156" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 371.09539623596595,60.125364213554526 L 380,57 L 370.76811104476934,53.58519962292995" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 472.28456162139054,84.62717071088365 L 471.8581378214798,111.72236561040503 L 187.7988140775351,111.66820113229016 L 188.45643040070144,170.2257445891042 L 200.08930907425903,170.01761107170844" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 190.5955550751266,173.29497398660627 L 200,170 L 190.39956672541882,166.4608242986414" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 379.9084863035979,169.92930457015956 Q 399.64382134314803,169.7053142891756 419.6086290870368,170.22906582696785" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 410.5156267202635,172.9391138034251 L 420,170 L 410.457467999393,166.6075359825418" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 594.6917576180732,170.3702869573004 Q 615.825782695704,170.9297666977764 635.2944447639372,169.7331474932065" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 625.6161911931534,173.12620966213456 L 635,170 L 625.9775653293822,166.88336110969817" fill="none" stroke="#1e1e1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="270" y="58" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="18" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">Ticket Input</text>
+  <text x="472" y="58" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">1. collect-context</text>
+  <text x="472.5" y="100" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">deterministic</text>
+  <text x="290" y="170" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">2. triage-specialist</text>
+  <text x="290" y="215" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">LLM + tools</text>
+  <text x="507" y="170" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">3. policy-reviewer</text>
+  <text x="507" y="215" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">LLM</text>
+  <text x="712.5" y="170" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="16" fill="#1e1e1e" text-anchor="middle" dominant-baseline="central">4. reply-writer</text>
+  <text x="712" y="215" font-family="'Virgil', 'Segoe Print', 'Comic Sans MS', cursive" font-size="12" fill="#868e96" text-anchor="middle" dominant-baseline="central">LLM</text>
+  </g>
+</svg>
