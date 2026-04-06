@@ -8,6 +8,11 @@ transition: fade 0.3s
 style: |
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+  @font-face { font-family: 'Geist Mono'; font-weight: 400; font-style: normal; src: url('https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Geist Mono'; font-weight: 500; font-style: normal; src: url('https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Geist Mono'; font-weight: 600; font-style: normal; src: url('https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Geist Mono'; font-weight: 700; font-style: normal; src: url('https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-700-normal.woff2') format('woff2'); }
+
   @font-face { font-family: 'Asta Sans'; font-weight: 400; font-style: normal; src: url('https://cdn.jsdelivr.net/fontsource/fonts/asta-sans@latest/latin-400-normal.woff2') format('woff2'); }
   @font-face { font-family: 'Asta Sans'; font-weight: 500; font-style: normal; src: url('https://cdn.jsdelivr.net/fontsource/fonts/asta-sans@latest/latin-500-normal.woff2') format('woff2'); }
   @font-face { font-family: 'Asta Sans'; font-weight: 600; font-style: normal; src: url('https://cdn.jsdelivr.net/fontsource/fonts/asta-sans@latest/latin-600-normal.woff2') format('woff2'); }
@@ -20,7 +25,9 @@ style: |
     --bt-purple: #8079F3;
     --bt-dark: #000000;
     --bt-gray: #595959;
-    --bt-bg: #FDFDFD;
+    --bt-orange: #FF8000;
+    --bt-teal: #0097A7;
+    --bt-bg: #F7F6F2;
     --bt-bg-alt: #EEEEEE;
   }
 
@@ -54,8 +61,9 @@ style: |
     left: 50%;
     transform: translateX(-50%);
     right: auto;
+    font-family: 'Geist Mono', monospace;
     font-size: 11px;
-    font-weight: bold;
+    font-weight: 600;
     color: var(--bt-indigo);
     z-index: 10;
   }
@@ -66,8 +74,9 @@ style: |
     right: 28px;
     left: auto;
     width: auto;
+    font-family: 'Geist Mono', monospace;
     font-size: 11px;
-    font-weight: bold;
+    font-weight: 600;
     color: var(--bt-indigo);
     z-index: 10;
     text-align: right;
@@ -91,7 +100,7 @@ style: |
   h1 {
     color: var(--bt-indigo);
     font-family: 'Asta Sans', 'Inter', 'Arial', sans-serif;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 1.8em;
     margin-bottom: 0.3em;
   }
@@ -117,6 +126,7 @@ style: |
   code {
     font-family: 'Geist Mono', 'Fira Code', 'Consolas', monospace;
     font-size: 0.85em;
+    color: var(--bt-teal);
   }
 
   pre {
@@ -219,6 +229,7 @@ style: |
 
   section.lead h1 {
     color: white;
+    font-weight: 500;
     font-size: 2.2em;
   }
 
@@ -247,6 +258,7 @@ style: |
 
   section.divider h1 {
     color: white;
+    font-weight: 500;
     font-size: 2.2em;
   }
 
@@ -313,9 +325,9 @@ style: |
 
 <!-- _class: lead -->
 
-# Shipping Quality AI Applications with Braintrust
+# Shipping quality AI applications with Braintrust
 
-## Hands-on Workshop
+## Hands-on workshop
 
 <span style="font-size:16px;color:rgba(255,255,255,0.5)">v{{VERSION}}</span>
 
@@ -329,7 +341,7 @@ features with confidence.
 
 ---
 
-## 🚀 Getting Started
+## Getting started
 
 **Environment:** macOS, Linux, or WSL on Windows
 
@@ -361,25 +373,36 @@ are the only hard requirements. Get this running while we cover the intro.
 
 ---
 
-## 🛑 The GenAI production gap
+## The GenAI production gap
 
-<div style="display:flex;gap:30px;align-items:center">
+<div style="display:flex;gap:24px;align-items:center">
 <div style="flex:1">
 
-Most AI pilots never make it to production:
+<div style="display:flex;flex-direction:column;gap:18px;margin-top:4px">
+<div style="display:flex;align-items:center;gap:20px;padding:16px 20px;background:#fff;border-left:4px solid var(--bt-indigo);border-radius:0 6px 6px 0">
+<span style="font-size:52px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;line-height:1">95%</span>
+<span style="font-size:22px;line-height:1.3">of GenAI pilots fail to scale beyond proof-of-concept <span style="font-size:15px;color:var(--bt-gray)">— <a href="https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo/">MIT/NANDA 2025</a></span></span>
+</div>
+<div style="display:flex;align-items:center;gap:20px;padding:16px 20px;background:#fff;border-left:4px solid var(--bt-indigo);border-radius:0 6px 6px 0">
+<span style="font-size:52px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;line-height:1">80%</span>
+<span style="font-size:22px;line-height:1.3">of AI projects fail to deliver business value <span style="font-size:15px;color:var(--bt-gray)">— <a href="https://www.rand.org/pubs/research_reports/RRA2680-1.html">RAND Corporation</a></span></span>
+</div>
+<div style="display:flex;align-items:center;gap:20px;padding:16px 20px;background:#fff;border-left:4px solid var(--bt-orange);border-radius:0 6px 6px 0">
+<span style="font-size:52px;font-weight:700;color:var(--bt-orange);font-family:'Geist Mono',monospace;line-height:1">89%</span>
+<span style="font-size:22px;line-height:1.3">of scaling failures trace to five gaps — top three: integration complexity, <strong>output quality at volume</strong>, and <strong>monitoring & observability</strong> <span style="font-size:15px;color:var(--bt-gray)">— <a href="https://www.digitalapplied.com/blog/ai-agent-scaling-gap-march-2026-pilot-to-production">Digital Applied 2026</a></span></span>
+</div>
+</div>
 
-- **95%** of GenAI pilots fail to scale beyond proof-of-concept - [MIT/NANDA 2025](https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo/)
-- **80%** of AI projects fail to deliver business value - [RAND Corporation](https://www.rand.org/pubs/research_reports/RRA2680-1.html)
-- **89%** of scaling failures trace to five gaps - the top three: integration complexity, **output quality at volume**, and **monitoring & observability** - [Digital Applied 2026](https://www.digitalapplied.com/blog/ai-agent-scaling-gap-march-2026-pilot-to-production)
-
-The bottleneck is not model quality. It is the **operational skill set**: evaluation, observability, and systematic improvement.
+<div style="margin-top:18px;padding:14px 20px;background:var(--bt-indigo);color:#fff;border-radius:6px;font-size:21px;font-weight:600">
+The bottleneck is the operational skill set: evaluation, observability, and systematic improvement.
+</div>
 
 </div>
-<div style="flex:0 0 auto;text-align:center">
+<div style="flex:0 0 auto;text-align:center;margin-top:40px">
 
 ![w:320](assets/xkcd-ai-methodology.png)
 
-<span style="font-size:11px;color:var(--bt-gray)">xkcd.com/2451 (CC BY-NC 2.5)</span>
+<span style="font-size:11px;color:var(--bt-gray);display:block;margin-top:-8px">xkcd.com/2451 (CC BY-NC 2.5)</span>
 
 </div>
 </div>
@@ -396,14 +419,31 @@ selection. This workshop teaches that operational skill set.
 
 ## Common mistakes teams make when shipping AI
 
-- Shipping after 3–5 impressive demos
-- Using one giant prompt for classification, policy, and response
-- Treating logs as sufficient observability
-- Fixing failures without adding eval coverage
-- Running LLM judges on everything without a cost strategy
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+<div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
+<strong style="font-size:21px">Demo-driven shipping</strong><br>
+<span style="font-size:17px;color:var(--bt-gray)">Launching after 3-5 impressive demos without systematic testing</span>
+</div>
+<div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
+<strong style="font-size:21px">Monolithic prompts</strong><br>
+<span style="font-size:17px;color:var(--bt-gray)">One giant prompt handling classification, policy, and response</span>
+</div>
+<div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
+<strong style="font-size:21px">Logs as observability</strong><br>
+<span style="font-size:17px;color:var(--bt-gray)">Treating raw logs as sufficient insight into model behavior</span>
+</div>
+<div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
+<strong style="font-size:21px">Fix without coverage</strong><br>
+<span style="font-size:17px;color:var(--bt-gray)">Patching failures without adding eval cases to prevent regression</span>
+</div>
+<div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
+<strong style="font-size:21px">Blind LLM judging</strong><br>
+<span style="font-size:17px;color:var(--bt-gray)">Running LLM judges on everything without a cost strategy</span>
+</div>
+</div>
 
 <div class="teaching-point">
-💡 <strong>Key Takeaway:</strong> Most production issues are not model failures. They are workflow failures.
+<strong>Key takeaway:</strong> Most production issues trace back to workflow gaps.
 </div>
 
 <!--
@@ -416,15 +456,39 @@ each of these directly.
 
 ## The hard part is not the prototype
 
-- Getting a demo to work: **straightforward**
-- Knowing whether it is reliable: **hard**
-- Knowing what changed when quality drops: **harder**
-- Improving it systematically: **the actual job**
+<div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:-10px;padding-bottom:80px">
+<div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:stretch;gap:0 10px">
+<div style="background:rgba(255,128,0,0.12);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px">&#9654;</div>
+<span style="font-size:20px;color:var(--bt-gray)">Getting a demo to work</span>
+</div>
+<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center">&#10132;</span>
+<div style="background:rgba(255,128,0,0.25);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px">&#9678;</div>
+<span style="font-size:20px;color:var(--bt-gray)">Knowing whether it is reliable</span>
+</div>
+<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center">&#10132;</span>
+<div style="background:rgba(255,128,0,0.45);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px">&#9651;</div>
+<span style="font-size:20px">Knowing what changed when quality drops</span>
+</div>
+<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center">&#10132;</span>
+<div style="background:var(--bt-orange);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<div style="font-size:36px;color:#fff;margin-bottom:6px">&#10227;</div>
+<span style="font-size:20px;color:#fff">Improving it systematically</span>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:0 10px;margin-top:6px;text-align:center">
+<strong style="font-size:24px">Straightforward</strong>
+<span></span>
+<strong style="font-size:24px">Hard</strong>
+<span></span>
+<strong style="font-size:24px">Harder</strong>
+<span></span>
+<strong style="font-size:24px;color:var(--bt-orange)">The actual job</strong>
 
-This workshop focuses on the **operational workflow** that turns a POC into a production system.
-
-<div style="background:var(--bt-indigo);color:#fff;padding:18px 28px;border-radius:8px;font-size:32px;font-weight:bold;text-align:center;margin-top:12px">
-We are not just building an AI feature.<br>We are building the feedback loop that lets it survive production.
+<div style="background:var(--bt-indigo);color:#fff;padding:18px 28px;border-radius:8px;font-size:28px;font-weight:bold;text-align:center;position:absolute;bottom:60px;left:40px;right:40px">
+The feedback loop we build today is what lets an AI feature survive production.
 </div>
 
 <!--
@@ -456,7 +520,7 @@ Every row maps to a specific section we will build together.
 
 ---
 
-## 📚 What you will learn
+## What you will learn
 
 By the end of this workshop, you will be able to:
 
@@ -480,14 +544,35 @@ mental model is what you take with you: observe, measure, improve, test.
 
 ## Who this workshop is for
 
-This workshop is most useful for:
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px">
 
-- **AI / product engineers** building LLM-powered features
-- **Applied AI teams** moving prototypes to production
-- **Platform / infra teams** supporting LLM applications at scale
-- **Technical product leaders** responsible for AI reliability
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
+<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px">&lt;/&gt; ENGINEER</div>
+<div style="font-weight:600;font-size:22px;margin-bottom:4px">AI / product engineers</div>
+<div style="font-size:18px;color:var(--bt-gray)">Building LLM-powered features and shipping them to production</div>
+</div>
 
-> Especially useful if you already have a prototype and need to make it trustworthy.
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
+<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px">&#x25B2; APPLIED AI</div>
+<div style="font-weight:600;font-size:22px;margin-bottom:4px">Applied AI teams</div>
+<div style="font-size:18px;color:var(--bt-gray)">Moving prototypes to production with repeatable quality</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
+<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px">&#x2692; PLATFORM</div>
+<div style="font-weight:600;font-size:22px;margin-bottom:4px">Platform / infra teams</div>
+<div style="font-size:18px;color:var(--bt-gray)">Supporting LLM applications at scale across the org</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
+<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px">&#x25C8; LEADERSHIP</div>
+<div style="font-weight:600;font-size:22px;margin-bottom:4px">Technical product leaders</div>
+<div style="font-size:18px;color:var(--bt-gray)">Responsible for AI reliability and production quality</div>
+</div>
+
+</div>
+
+<div style="text-align:center;color:var(--bt-gray);font-style:italic;margin-top:12px;font-size:20px">Especially useful if you already have a prototype and need to make it trustworthy.</div>
 
 <!--
 Speaker notes: Quick self-orientation. Most people in the room will
@@ -502,14 +587,41 @@ are building agents, RAG systems, or any LLM-powered workflow.
 Braintrust is the infrastructure that makes AI measurable and improvable.  
 It sits between your application and your models - where data, observability, and evals come together so you can ship with confidence.
 
-- **Data:** turning traces and outputs into structured evaluation datasets.
-- **Observability:** understanding model behavior in production.
-- **Evals:** defining what “good” means and measuring against it.
-- **Iteration:** comparing prompts, models, and versions to improve quality.
-- **Quality gates**: automated checks that prevent regressions from reaching production
-- **Workflow acceleration**: AI-powered tools that speed up the entire development cycle
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px">
 
-Teams at Notion, Stripe, Zapier, Vercel, and Ramp use Braintrust to compare models, test prompts, and catch regressions - turning production data into better AI with every release.
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
+<div style="font-weight:600;font-size:20px;margin-bottom:4px">Data</div>
+<div style="font-size:16px;color:var(--bt-gray)">Turning traces and outputs into structured evaluation datasets</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
+<div style="font-weight:600;font-size:20px;margin-bottom:4px">Observability</div>
+<div style="font-size:16px;color:var(--bt-gray)">Understanding model behavior in production</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
+<div style="font-weight:600;font-size:20px;margin-bottom:4px">Evals</div>
+<div style="font-size:16px;color:var(--bt-gray)">Defining what "good" means and measuring against it</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
+<div style="font-weight:600;font-size:20px;margin-bottom:4px">Iteration</div>
+<div style="font-size:16px;color:var(--bt-gray)">Comparing prompts, models, and versions to improve quality</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
+<div style="font-weight:600;font-size:20px;margin-bottom:4px">Quality gates</div>
+<div style="font-size:16px;color:var(--bt-gray)">Automated checks that prevent regressions from reaching production</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
+<div style="font-weight:600;font-size:20px;margin-bottom:4px">Workflow acceleration</div>
+<div style="font-size:16px;color:var(--bt-gray)">AI-powered tools that speed up the entire development cycle</div>
+</div>
+
+</div>
+
+<div style="text-align:center;color:var(--bt-gray);font-size:17px;margin-top:12px">Teams at Notion, Stripe, Zapier, Vercel, and Ramp use Braintrust to ship quality AI products at scale.</div>
 
 <!--
 Speaker notes: Make the Braintrust value prop explicit. This is not
@@ -520,7 +632,7 @@ deployment.
 
 ---
 
-## ☸️ The Braintrust Flywheel
+## The Braintrust flywheel
 
 <div style="display:flex;gap:30px;align-items:center;flex:1">
 <div style="flex:0 0 auto;display:flex;align-items:center;justify-content:center">
@@ -544,7 +656,7 @@ deployment.
 </div>
 
 <div class="teaching-point">
-🔁 <strong>Key Takeaway:</strong> This is not a one-time setup. It is a continuous loop.
+<strong>Key takeaway:</strong> This is a continuous loop that compounds with every cycle.
 </div>
 
 <!--
@@ -576,7 +688,7 @@ and live coding. Each part builds on the previous one. The total is around
 
 ---
 
-## 🤖 Helpr: Support Triage Agent
+## Helpr: Support triage agent
 
 A fictional B2B SaaS agent that receives a support ticket and produces:
 
@@ -599,7 +711,7 @@ downstream automation thresholds.
 
 ---
 
-## The 5-Stage Agent Workflow
+## The 5-stage agent workflow
 
 <div style="flex:1;display:flex;align-items:center;justify-content:center;margin:0 -50px">
 
@@ -615,7 +727,7 @@ recent account events. No LLM involved yet, just data assembly.
 
 ---
 
-## The 5-Stage Agent Workflow
+## The 5-stage agent workflow
 
 <div style="flex:1;display:flex;align-items:center;justify-content:center;margin:0 -50px">
 
@@ -632,7 +744,7 @@ each with a single responsibility -- much easier to debug than a monolith.
 
 ---
 
-## The 5-Stage Agent Workflow
+## The 5-stage agent workflow
 
 <div style="flex:1;display:flex;align-items:center;justify-content:center;margin:0 -50px">
 
@@ -649,7 +761,7 @@ Deterministic bookends keep the business contract stable.
 
 ---
 
-## The 5-Stage Agent Workflow
+## The 5-stage agent workflow
 
 <div style="flex:1;display:flex;align-items:center;justify-content:center;margin:0 -50px">
 
@@ -666,11 +778,11 @@ quality continuously. This is the complete production-ready architecture.
 
 ---
 
-## 🗺️ Checkpoint Map
+## Checkpoint map
 
 <div style="font-size:24px;line-height:1.3">
 
-| # | `git checkout workshop/...` | Focus |
+| # | git checkout workshop/... | Focus |
 |---|---------------------------|-------|
 | 00 | `00-starter` | Scaffold & environment setup |
 | 01 | `01-basic-agent` | Single LLM call + structured output |
@@ -700,7 +812,7 @@ evals. The terminal commands will be on screen when we reach each phase.
 
 <!-- _class: divider -->
 
-# 🏗️ Part 1: Build the Agent
+# Part 1: Build the agent
 
 ## Checkpoints 00 → 03
 
@@ -711,16 +823,16 @@ from an empty scaffold to a full 5-stage agent workflow.
 
 ---
 
-## Checkpoint 00: Scaffold → 01 Basic Agent
+## Checkpoint 00: Scaffold → 01 basic agent
 
-**🎯 Goal:** Get a plausible result from a single LLM call
+**Goal:** Get a plausible result from a single LLM call
 
 - One prompt, one model call, structured output via Zod schema
 - No tools, no stages, no tracing
 - This is where many teams stop
 
 <div class="teaching-point">
-⚠️ <strong>Key Takeaway:</strong> A working demo is not evidence of reliability.
+<strong>Key takeaway:</strong> A working demo is not evidence of reliability.
 </div>
 
 <!--
@@ -732,7 +844,7 @@ the range of real tickets.
 
 ---
 
-## Pseudocode: Basic Agent
+## Pseudocode: Basic agent
 
 ```ts
 async function runSupportTriage(input: TicketInput): Promise<TriageResult> {
@@ -757,7 +869,7 @@ Simple, but we have no visibility into why it made its decisions.
 
 ---
 
-## Try It: Submit a Ticket
+## Try it: Submit a ticket
 
 <div style="display:flex;gap:30px">
 <div style="flex:1">
@@ -804,9 +916,9 @@ reasoning, recommended actions, and a draft reply.
 
 ---
 
-## Checkpoint 02: Add Local Tools
+## Checkpoint 02: Add local tools
 
-**🎯 Goal:** Augment the model with deterministic context
+**Goal:** Augment the model with deterministic context
 
 Three local tools:
 
@@ -817,7 +929,7 @@ Three local tools:
 | `createEscalation(reason)` | Deterministic side effect |
 
 <div class="teaching-point">
-🔧 <strong>Key Takeaway:</strong> <br/>
+<strong>Key takeaway:</strong> <br/>
 As soon as the app can call tools, the number of ways it can fail increases.
 </div>
 
@@ -830,7 +942,7 @@ signals like a billing_admin_role_removed event.
 
 ---
 
-## Pseudocode: With Tools
+## Pseudocode: With tools
 
 ```ts
 async function runSupportTriage(input: TicketInput): Promise<TriageResult> {
@@ -862,9 +974,9 @@ one big prompt making all decisions at once.
 
 ---
 
-## Checkpoint 03: Specialist Stages
+## Checkpoint 03: Specialist stages
 
-**🎯 Goal:** Replace the monolith with explicit handoffs
+**Goal:** Replace the monolith with explicit handoffs
 
 | Stage | Type | Responsibility |
 |-------|------|---------------|
@@ -875,8 +987,7 @@ one big prompt making all decisions at once.
 | `finalize-result` | deterministic | Merge decisions + escalate if needed |
 
 <div class="teaching-point">
-🧩 <strong>Key Takeaway:</strong> <br/>
-Explicit stages are more debuggable than opaque monoliths.
+<strong>Key takeaway:</strong> Explicit stages are more debuggable than opaque monoliths.
 </div>
 
 <!--
@@ -888,7 +999,7 @@ lets you improve wording and policy independently.
 
 ---
 
-## Pseudocode: Staged Workflow
+## Pseudocode: Staged workflow
 
 ```ts
 async function runSupportTriage(input: TicketInput): Promise<TriageResult> {
@@ -914,7 +1025,7 @@ tested, and improved independently.
 
 <!-- _class: code-along -->
 
-## Code Along: Build the Agent
+## Code along: Build the agent
 
 Checkpoints 00 through 03
 
@@ -938,9 +1049,9 @@ to catch up before we add tracing.
 
 <!-- _class: divider -->
 
-# 🔭 Part 2: Observe
+# Part 2: Observe
 
-## Checkpoint 04: Braintrust Tracing
+## Checkpoint 04: Braintrust tracing
 
 <!--
 Speaker notes: The agent works. Now we need to see inside it.
@@ -949,20 +1060,35 @@ Without observability, debugging is guesswork.
 
 ---
 
-## Checkpoint 04: Add Braintrust Tracing
+## Checkpoint 04: Add Braintrust tracing
 
-**🎯 Goal:** Make every stage, tool call, and model call visible
+<p style="font-size:22px"><strong>Goal:</strong> Make every stage, tool call, and model call visible</p>
 
-What tracing gives you:
+<div style="display:flex;flex-direction:column;gap:0;margin-top:4px">
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Full execution path for every request</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Nested stage spans with inputs, outputs, metadata</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Model call details: latency, tokens, cost</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Tool call details: what was called, what it returned</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Tags for filtering: <code>entrypoint</code>, <code>runtime_mode</code>, stage names</span>
+</div>
+</div>
 
-- Full execution path for every request
-- Nested stage spans with inputs, outputs, metadata
-- Model call details: latency, tokens, cost
-- Tool call details: what was called, what it returned
-- Tags for filtering: `entrypoint`, `runtime_mode`, stage names
-
-<div class="teaching-point">
-🔍 <strong>Key Takeaway:</strong> The final answer is not enough. <br/>
+<div class="teaching-point" style="position:absolute;bottom:60px;left:40px;right:40px">
+<strong>Key takeaway:</strong> The final answer is not enough.<br/>
 Production debugging requires the full execution path.
 </div>
 
@@ -1006,7 +1132,7 @@ withChildSpan creates nested spans for each stage.
 
 ---
 
-## 🫆 How to Read a Trace
+## How to read a trace
 
 ```sh
 root span ─── overall input, final result, cost, latency
@@ -1037,7 +1163,7 @@ you will use it during the failure replay later.
 
 <!-- _class: code-along -->
 
-## Code Along: Add Tracing
+## Code along: Add tracing
 
 Checkpoint 04
 
@@ -1062,9 +1188,9 @@ for an AI system.
 
 <!-- _class: divider -->
 
-# 📊 Part 3: Evaluate
+# Part 3: Evaluate
 
-## Checkpoint 05: Dataset & Offline Evals
+## Checkpoint 05: Dataset & offline evals
 
 <!--
 Speaker notes: We can see inside the agent now. Next we need to
@@ -1075,16 +1201,38 @@ measure its quality systematically.
 
 ## What does "good enough to ship" mean?
 
-For our Helpr support triage app, quality means:
+<p style="font-size:22px;color:var(--bt-gray);margin-bottom:4px">For our Helpr support triage app, quality means:</p>
 
-- Correct category on common support cases
-- No low-severity outcome for enterprise-blocking incidents
-- Escalation decisions align with policy
-- Customer reply stays faithful to the final reviewed decision
-- Structured output is always valid
-- Changes improve target cases **without breaking unrelated ones**
+<div style="display:flex;flex-direction:column;gap:0;margin-top:4px">
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Correct category on common support cases</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">No low-severity outcome for enterprise-blocking incidents</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Escalation decisions align with policy</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Customer reply stays faithful to the final reviewed decision</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Structured output is always valid</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0">
+<span style="font-size:26px;color:var(--bt-teal);font-weight:700">&#10003;</span>
+<span style="font-size:21px">Changes improve target cases <strong>without breaking unrelated ones</strong></span>
+</div>
+</div>
 
-> Evals are how we turn these expectations into something we can test repeatedly.
+<div style="background:var(--bt-indigo);color:#fff;padding:14px 24px;border-radius:8px;font-size:22px;font-weight:600;text-align:center;position:absolute;bottom:60px;left:40px;right:40px">
+Evals are how you turn these expectations into something you can test repeatedly.
+</div>
 
 <!--
 Speaker notes: Define success before introducing measurement. This
@@ -1093,11 +1241,11 @@ slide makes the eval section feel inevitable rather than optional.
 
 ---
 
-## Checkpoint 05: Dataset & Offline Evals
+## Checkpoint 05: Dataset & offline evals
 
 <div style="font-size:22px">
 
-**🎯 Goal:** Stop evaluating by intuition - measure quality systematically
+**Goal:** Stop evaluating by intuition - measure quality systematically
 
 **Seed dataset** covers easy, medium, and hard cases: straightforward routing, ambiguous severity, hidden urgency behind calm wording, and conflicting tool signals.
 
@@ -1112,12 +1260,13 @@ make seed-dataset && RUNTIME_MODE=local make eval
 </div>
 
 <div class="teaching-point">
-📊 <strong>Key Takeaway:</strong> The point of evals is not to produce a number. It is to know whether the system is safe to change.
+<strong>Key takeaway:</strong><br/>
+The point of evals is to know whether the system is safe to change.
 </div>
 
 <!--
 Speaker notes: The seed dataset has representative test cases. Deterministic
-scorers are cheap and fast - run them on everything. LLM-as-judge scorers
+scorers are cheap and fast - run them on everything. LLM-as-a-judge scorers
 catch nuance but cost more - use them strategically. After running the eval,
 open Braintrust Experiments to see the score breakdown per case.
 -->
@@ -1126,7 +1275,7 @@ open Braintrust Experiments to see the score breakdown per case.
 
 <!-- _class: divider -->
 
-# 🚀 Part 4: Deploy & Manage
+# Part 4: Deploy & manage
 
 ## Checkpoints 06 → 08
 
@@ -1140,16 +1289,34 @@ quality signals can be managed without redeploying code.
 
 ## Why AI teams need a shared platform?
 
-Tracing and evals can start locally. But once multiple people are involved, the workflow needs a shared platform.
+<p style="font-size:22px;color:var(--bt-gray);margin-bottom:4px">Tracing and evals can start locally. But once multiple people are involved, the workflow needs a shared platform.</p>
 
-Required capabilities:
-- **Shared prompt management** - everyone edits the same source of truth
-- **Runtime configurability** - change model or parameters without redeploying
-- **Reproducibility** - every change is versioned and auditable
-- **Safer iteration** - eval before you ship, not after
-- **Auditability** - know who changed what and when
+<div style="display:flex;flex-direction:column;gap:0;margin-top:4px">
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-indigo);font-weight:700">&#10003;</span>
+<span style="font-size:21px"><strong>Shared prompt management</strong> — everyone edits the same source of truth</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-indigo);font-weight:700">&#10003;</span>
+<span style="font-size:21px"><strong>Runtime configurability</strong> — change model or parameters without redeploying</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-indigo);font-weight:700">&#10003;</span>
+<span style="font-size:21px"><strong>Reproducibility</strong> — every change is versioned and auditable</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #ddd">
+<span style="font-size:26px;color:var(--bt-indigo);font-weight:700">&#10003;</span>
+<span style="font-size:21px"><strong>Safer iteration</strong> — eval before you ship, not after</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:10px 0">
+<span style="font-size:26px;color:var(--bt-indigo);font-weight:700">&#10003;</span>
+<span style="font-size:21px"><strong>Auditability</strong> — know who changed what and when</span>
+</div>
+</div>
 
-> This is the point where an individual workflow becomes an organizational capability.
+<div style="background:var(--bt-indigo);color:#fff;padding:14px 24px;border-radius:8px;font-size:22px;font-weight:600;text-align:center;position:absolute;bottom:60px;left:40px;right:40px">
+This is the point where an individual workflow becomes an organizational capability.
+</div>
 
 <!--
 Speaker notes: This is the transition from "I can build and test locally"
@@ -1158,7 +1325,7 @@ to "my team can operate this in production." Managed mode is the mechanism.
 
 ---
 
-## Checkpoint 06 & 07: Managed Prompts, Parameters & Tools
+## Checkpoint 06 & 07: Managed prompts, parameters & tools
 
 At this point, the technical workflow works. Now we make it **manageable by a team**.  
 Move runtime control into Braintrust **without losing reproducibility**
@@ -1193,11 +1360,11 @@ parameter object controls the runtime model.
 
 ---
 
-## Checkpoint 08: Online Scoring
+## Checkpoint 08: Online scoring
 
 <div style="font-size:22px;line-height:1.4">
 
-**🎯 Goal:** Live traces carry quality signals, not just execution details
+**Goal:** Live traces carry quality signals, not just execution details
 
 | Offline evals | Online scoring |
 |--------------|----------------|
@@ -1207,13 +1374,13 @@ parameter object controls the runtime model.
 
 **What we publish:**
 - **Deterministic scorers** - schema validity, required fields, confidence range
-- **LLM-as-judge scorers** - triage quality, reply tone
+- **LLM-as-a-Judge scorers** - triage quality, reply tone
 - **Automation rules** - `helpr-root-quality-online`, `helpr-reply-quality-online`, `helpr-stage-structure-online`
 
 After this: every trace carries structured quality signals automatically.
 
-<div style="font-size:18px;background:#fff9e0;border-left:4px solid #fd971f;padding:8px 14px;border-radius:4px;margin-top:8px">
-⚠️ <strong>Workshop vs Production:</strong> Here we run LLM-as-judge on <strong>every trace</strong> for visibility. <br/>
+<div style="font-size:18px;background:rgba(255,128,0,0.08);border-left:4px solid var(--bt-orange);padding:8px 14px;border-radius:4px;margin-top:8px">
+<strong>Workshop vs production:</strong> Here we run LLM-as-judge on <strong>every trace</strong> for visibility. <br/>
 In production, you would <strong>sample 5–10%</strong> of traces for LLM-based scoring to manage costs; deterministic scorers can still run 100%.
 </div>
 
@@ -1233,7 +1400,7 @@ Deterministic scorers are cheap and can run on every trace.
 
 <!-- _class: divider -->
 
-# 🩹 Part 5: Remediate
+# Part 5: Remediate
 
 ## Checkpoints 09a & 09b
 
@@ -1245,21 +1412,21 @@ into a systematic fix.
 
 ---
 
-## Checkpoint 09a: The Production Failure
+## Checkpoint 09a: The production failure
 
 <div style="background:#fff0f0;border:2px solid #e03131;border-radius:8px;padding:16px 20px;margin-bottom:12px">
-<span style="font-size:14px;font-weight:bold;color:#e03131;text-transform:uppercase;letter-spacing:1px">🚨 Production Ticket</span>
+<span style="font-size:14px;font-weight:bold;color:#e03131;text-transform:uppercase;letter-spacing:1px">Production ticket</span>
 
 *"Not urgent, but our CFO cannot export invoices before tomorrow's board reporting."*
 </div>
 
-- **What the model sees:** calm wording, no explicit urgency ☮️
-- **What the business needs:** high severity, immediate escalation 🚨
+- **What the model sees:** calm wording, no explicit urgency
+- **What the business needs:** high severity, immediate escalation
 
 This is the gap between prototype quality and production quality.
 
 
-### Code Checkpoint:
+### Code checkpoint:
 ```sh
 RUNTIME_MODE=managed FAILURE_MATCH="board reporting" make replay-failure
 ```
@@ -1275,7 +1442,7 @@ Use the trace reading guide to identify which stage underreacted.
 
 ---
 
-## Pseudocode: Remediation Loop
+## Pseudocode: Remediation loop
 
 <div style="font-size:24px">
 
@@ -1317,7 +1484,7 @@ experience, not just imagination. This is the operational muscle.
 
 <!-- _class: code-along -->
 
-## Code Along: Failure Replay & Remediation
+## Code along: Failure replay & remediation
 
 Checkpoints 09a and 09b
 
@@ -1342,7 +1509,7 @@ and rerun the eval.
 
 <!-- _class: divider -->
 
-# 🏁 Final Remarks
+# Final remarks
 
 <!--
 Speaker notes: We have now approached the end of our session and would like to wrap up.
@@ -1350,41 +1517,73 @@ Speaker notes: We have now approached the end of our session and would like to w
 
 ---
 
-## 🗼 What you built today
+## What you built today
 
 <div class="recap-table">
 
 | Part | What you did | Checkpoint |
 |---------|-------------|------------|
-| 🏗️ **Build** | Went from empty scaffold to a 5-stage agent workflow with structured output, tools, and specialist stages | `00` → `03` |
-| 🔭 **Observe** | Added Braintrust tracing so every LLM call, tool invocation, and stage is recorded | `04` |
-| 📊 **Evaluate** | Created a seed dataset and ran offline evals with automated scorers | `05` |
-| 🚀 **Deploy** | Moved prompts, parameters, and tools into Braintrust managed mode; added online scoring | `06` → `08` |
-| 🩹 **Remediate** | Replayed a production failure, diagnosed it with traces, fixed the prompt, and proved the fix with a regression eval | `09a` → `09b` |
+| **Build** | Went from empty scaffold to a 5-stage agent workflow with structured output, tools, and specialist stages | `00` → `03` |
+| **Observe** | Added Braintrust tracing so every LLM call, tool invocation, and stage is recorded | `04` |
+| **Evaluate** | Created a seed dataset and ran offline evals with automated scorers | `05` |
+| **Deploy** | Moved prompts, parameters, and tools into Braintrust managed mode; added online scoring | `06` → `08` |
+| **Remediate** | Replayed a production failure, diagnosed it with traces, fixed the prompt, and proved the fix with a regression eval | `09a` → `09b` |
 
 </div>
 
 You now have the **full feedback loop**:   
-build → observe → evaluate → deploy → remediate → repeat.
+build → observe → evaluate → deploy → remediate → repeat
 
 ---
 
-## ✅ Key Takeaways
+## Key takeaways
 
-**1. Prototype quality ≠ production quality**
-A working demo is not evidence of reliability.
-
-**2. Explicit stages > opaque monoliths**
-Separate responsibilities make failures debuggable.
-
-**3. Observability is not optional**
-Traces show what happened. Evals measure what matters.
-
-**4. Production failures are the highest-signal eval seeds**
-Do not wait for a perfect dataset before starting.
-
-**5. The feedback loop is what makes an AI product improve reliably**
-Observe → Measure → Improve → Test → Repeat. Each cycle compounds.
+<div style="display:flex;flex-direction:column;justify-content:center;flex:1">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+<div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">01</span>
+<span style="font-size:24px;color:var(--bt-orange)">&#8800;</span>
+</div>
+<strong style="font-size:19px">Prototype ≠ production</strong><br>
+<span style="font-size:16px;color:var(--bt-gray)">A working demo is not evidence of reliability</span>
+</div>
+<div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">02</span>
+<span style="font-size:24px;color:var(--bt-orange)">&#9638;</span>
+</div>
+<strong style="font-size:19px">Explicit stages</strong><br>
+<span style="font-size:16px;color:var(--bt-gray)">Separate responsibilities make failures debuggable</span>
+</div>
+<div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">03</span>
+<span style="font-size:24px;color:var(--bt-orange)">&#9678;</span>
+</div>
+<strong style="font-size:19px">Observability is not optional</strong><br>
+<span style="font-size:16px;color:var(--bt-gray)">Traces show what happened. Evals measure what matters.</span>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;max-width:67%;margin-left:auto;margin-right:auto">
+<div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">04</span>
+<span style="font-size:24px;color:var(--bt-orange)">&#9652;</span>
+</div>
+<strong style="font-size:19px">Failures are eval seeds</strong><br>
+<span style="font-size:16px;color:var(--bt-gray)">Do not wait for a perfect dataset before starting</span>
+</div>
+<div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">05</span>
+<span style="font-size:24px;color:var(--bt-orange)">&#10227;</span>
+</div>
+<strong style="font-size:19px">The feedback loop compounds</strong><br>
+<span style="font-size:16px;color:var(--bt-gray)">Observe → Measure → Improve → Test → Repeat</span>
+</div>
+</div>
+</div>
 
 <!--
 Speaker notes: These five points are the workshop in summary. The
@@ -1397,13 +1596,43 @@ and forget -- they are the seed data for your next eval improvement.
 
 ## How to apply this with your team next week
 
-1. **Pick one existing AI workflow** - the one closest to production
-2. **Add end-to-end tracing** - see what is actually happening
-3. **Collect 10–20 real failures** or risky edge cases
-4. **Build a small eval set** with deterministic scorers first
-5. **Route every future production failure** back into the dataset
+<div style="position:relative;display:flex;flex-direction:column;justify-content:space-between;flex:1;padding-bottom:90px">
+<div style="position:absolute;left:21px;top:28px;bottom:120px;width:2px;background:var(--bt-indigo);opacity:0.25"></div>
+<div style="display:grid;grid-template-columns:44px 1fr;gap:0 16px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;text-align:center;line-height:1;background:var(--bt-bg);position:relative;z-index:1;padding:4px 0">1</span>
+<strong style="font-size:22px;line-height:1;padding-top:6px">Pick one existing AI workflow</strong>
+<span></span>
+<span style="font-size:17px;color:var(--bt-gray);margin-top:2px">The one closest to production</span>
+</div>
+<div style="display:grid;grid-template-columns:44px 1fr;gap:0 16px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;text-align:center;line-height:1;background:var(--bt-bg);position:relative;z-index:1;padding:4px 0">2</span>
+<strong style="font-size:22px;line-height:1;padding-top:6px">Add end-to-end tracing</strong>
+<span></span>
+<span style="font-size:17px;color:var(--bt-gray);margin-top:2px">See what is actually happening</span>
+</div>
+<div style="display:grid;grid-template-columns:44px 1fr;gap:0 16px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;text-align:center;line-height:1;background:var(--bt-bg);position:relative;z-index:1;padding:4px 0">3</span>
+<strong style="font-size:22px;line-height:1;padding-top:6px">Collect 10-20 real failures</strong>
+<span></span>
+<span style="font-size:17px;color:var(--bt-gray);margin-top:2px">Or risky edge cases</span>
+</div>
+<div style="display:grid;grid-template-columns:44px 1fr;gap:0 16px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;text-align:center;line-height:1;background:var(--bt-bg);position:relative;z-index:1;padding:4px 0">4</span>
+<strong style="font-size:22px;line-height:1;padding-top:6px">Build a small eval set</strong>
+<span></span>
+<span style="font-size:17px;color:var(--bt-gray);margin-top:2px">With deterministic scorers first</span>
+</div>
+<div style="display:grid;grid-template-columns:44px 1fr;gap:0 16px">
+<span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;text-align:center;line-height:1;background:var(--bt-bg);position:relative;z-index:1;padding:4px 0">5</span>
+<strong style="font-size:22px;line-height:1;padding-top:6px">Route every production failure back</strong>
+<span></span>
+<span style="font-size:17px;color:var(--bt-gray);margin-top:2px">Into the dataset</span>
+</div>
+</div>
 
-> Start with one loop. Do not wait for a perfect platform rollout.
+<div style="background:var(--bt-indigo);color:#fff;padding:14px 24px;border-radius:8px;font-size:22px;font-weight:600;text-align:center;position:absolute;bottom:60px;left:40px;right:40px">
+Start with one loop. Do not wait for a perfect platform rollout.
+</div>
 
 <!--
 Speaker notes: This is the adoption recipe. It is deliberately
@@ -1413,19 +1642,19 @@ is to get the first cycle running, not to build the perfect system.
 
 ---
 
-## 🏃‍➡️ Call to Action
+## Call to action
 
 <div style="background:var(--bt-indigo);color:#fff;padding:18px 28px;border-radius:8px;font-size:22px;font-weight:bold;text-align:center;margin-bottom:16px">
 Take the feedback loop back to your team.<br>Start tracing, evaluating, and improving your AI applications today.
 </div>
 
-**📚 Learning Resources**
+**Learning resources**
 
 - [Braintrust Documentation](https://www.braintrust.dev/docs) - guides for tracing, evals, prompts, and tools
 - [Braintrust Cookbook](https://www.braintrust.dev/docs/cookbook) - real-world examples and recipes
 - [Workshop Repo](https://github.com/braintrustdata/shipping-quality-ai-applications-workshop) - your reference implementation with all 11 checkpoints
 
-**💬 Next Steps**
+**Next steps**
 
 - Reach out to your **Braintrust account team** for onboarding support and enterprise features
 - Join the [Braintrust Discord](https://discord.gg/6G8s47F44X) for Q&A and best practices
@@ -1442,7 +1671,7 @@ scoring at scale.
 
 <!-- _class: lead -->
 
-# 🙏 Thank you! 🙏
+# Thank you
 
 Questions?
 
@@ -1456,7 +1685,7 @@ any checkpoint independently.
 
 <!-- _class: divider -->
 
-# 📎 Appendix
+# Appendix
 
 ---
 
@@ -1483,7 +1712,7 @@ any checkpoint independently.
 
 ---
 
-## Useful Commands Reference
+## Useful commands reference
 
 <div style="font-size:28px">
 
