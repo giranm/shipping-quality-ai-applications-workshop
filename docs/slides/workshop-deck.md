@@ -323,6 +323,8 @@ style: |
 
 ---
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <!-- _class: lead -->
 
 # Shipping quality AI applications with Braintrust
@@ -341,34 +343,122 @@ features with confidence.
 
 ---
 
-## Getting started
+## Agenda
 
-**Environment:** macOS, Linux, or WSL on Windows
-
-**Accounts & API keys:**
-- [Braintrust](https://www.braintrust.dev/signup) - Sign-up for free
-- [OpenAI Platform API key](https://platform.openai.com/api-keys)
-- *Optional:* AI coding assistant (Claude Code, Codex, Cursor, Copilot, etc)
-
-**Tooling:** `mise` + `make` (recommended), or **Node.js v22** + **pnpm v10.28.2**
-
-**Workshop repo:** Scan or clone:
-
-```sh
-git clone https://github.com/braintrustdata/shipping-quality-ai-applications-workshop.git
-```
-
-<div style="text-align:center">
-
-![w:140](assets/qr-workshop-repo.svg)
-
+<div style="display:flex;flex-direction:column;justify-content:center;flex:1">
+<table style="width:100%;border-collapse:collapse;font-size:21px">
+<tr style="border-bottom:2px solid #ddd">
+<th style="text-align:left;padding:8px 12px;width:140px">Section</th>
+<th style="text-align:left;padding:8px 12px;width:220px;white-space:nowrap">Part</th>
+<th style="text-align:left;padding:8px 12px">Focus</th>
+<th style="text-align:right;padding:8px 12px;width:90px;white-space:nowrap">Time</th>
+</tr>
+<tr style="border-bottom:2px solid var(--bt-indigo)">
+<td style="padding:10px 12px;font-weight:700;color:var(--bt-indigo);vertical-align:middle">Background</td>
+<td style="padding:10px 12px"></td>
+<td style="padding:10px 12px">The production gap, common mistakes, what you will learn</td>
+<td style="padding:10px 12px;text-align:right">~10 min</td>
+</tr>
+<tr style="border-bottom:1px solid #eee">
+<td rowspan="6" style="padding:10px 12px;font-weight:700;color:var(--bt-indigo);vertical-align:middle">Workshop</td>
+<td style="padding:10px 12px">0. Setup</td>
+<td style="padding:10px 12px">Environment, agent intro, architecture walkthrough</td>
+<td style="padding:10px 12px;text-align:right">~10 min</td>
+</tr>
+<tr style="border-bottom:1px solid #eee">
+<td style="padding:10px 12px">1. Build the Agent</td>
+<td style="padding:10px 12px">Scaffold → tools → 5-stage agent workflow</td>
+<td style="padding:10px 12px;text-align:right">~20 min</td>
+</tr>
+<tr style="border-bottom:1px solid #eee">
+<td style="padding:10px 12px">2. Observe</td>
+<td style="padding:10px 12px">Add Braintrust tracing</td>
+<td style="padding:10px 12px;text-align:right">~10 min</td>
+</tr>
+<tr style="border-bottom:1px solid #eee">
+<td style="padding:10px 12px">3. Evaluate</td>
+<td style="padding:10px 12px">Dataset, scorers, offline evals</td>
+<td style="padding:10px 12px;text-align:right">~15 min</td>
+</tr>
+<tr style="border-bottom:1px solid #eee">
+<td style="padding:10px 12px">4. Deploy & Manage</td>
+<td style="padding:10px 12px">Managed prompts, tools, online scoring</td>
+<td style="padding:10px 12px;text-align:right">~25 min</td>
+</tr>
+<tr style="border-bottom:2px solid var(--bt-indigo)">
+<td style="padding:10px 12px">5. Remediate</td>
+<td style="padding:10px 12px">Production failure → fix → regression test</td>
+<td style="padding:10px 12px;text-align:right">~15 min</td>
+</tr>
+<tr>
+<td style="padding:10px 12px;font-weight:700;color:var(--bt-indigo);vertical-align:middle">Wrap up</td>
+<td style="padding:10px 12px"></td>
+<td style="padding:10px 12px">Summary, key takeaways, next steps, Q&A</td>
+<td style="padding:10px 12px;text-align:right">~15 min</td>
+</tr>
+</table>
 </div>
 
 <!--
-Speaker notes: Let's get set up first. Scan the QR code or clone the repo now.
-The README has full instructions. mise trust && mise install && make setup gets
-you from zero to running. If you prefer not to use mise, Node 22 and pnpm
-are the only hard requirements. Get this running while we cover the intro.
+Speaker notes: This is the running order. We will alternate between slides
+and live coding. Each part builds on the previous one. The total is around
+110 minutes with natural break points between parts.
+-->
+
+---
+
+## Who this workshop is for
+
+<div style="display:flex;flex-direction:column;justify-content:center;flex:1">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
+<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px"><i class="fa-solid fa-code" style="margin-right:4px"></i> ENGINEER</div>
+<div style="font-weight:600;font-size:22px;margin-bottom:4px">AI / product engineers</div>
+<div style="font-size:18px;color:var(--bt-gray)">Building LLM-powered features and shipping them to production</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
+<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px"><i class="fa-solid fa-rocket" style="margin-right:4px"></i> APPLIED AI</div>
+<div style="font-weight:600;font-size:22px;margin-bottom:4px">Applied AI teams</div>
+<div style="font-size:18px;color:var(--bt-gray)">Moving prototypes to production with repeatable quality</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
+<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px"><i class="fa-solid fa-server" style="margin-right:4px"></i> PLATFORM</div>
+<div style="font-weight:600;font-size:22px;margin-bottom:4px">Platform / infra teams</div>
+<div style="font-size:18px;color:var(--bt-gray)">Supporting LLM applications at scale across the org</div>
+</div>
+
+<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
+<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px"><i class="fa-solid fa-compass" style="margin-right:4px"></i> LEADERSHIP</div>
+<div style="font-weight:600;font-size:22px;margin-bottom:4px">Technical product leaders</div>
+<div style="font-size:18px;color:var(--bt-gray)">Responsible for AI reliability and production quality</div>
+</div>
+
+</div>
+
+<div style="text-align:center;color:var(--bt-gray);font-style:italic;margin-top:12px;font-size:20px">Especially useful if you already have a prototype and need to make it trustworthy.</div>
+</div>
+
+<!--
+Speaker notes: Quick self-orientation. Most people in the room will
+fall into one of these categories. The techniques apply whether you
+are building agents, RAG systems, or any LLM-powered workflow.
+-->
+
+---
+
+<!-- _class: divider -->
+
+# Background
+
+## Why AI teams struggle to get to production
+
+<!--
+Speaker notes: Before we get hands-on, let's look at the landscape.
+Why do so many AI projects stall between prototype and production,
+and what does that mean for how we build?
 -->
 
 ---
@@ -421,23 +511,23 @@ selection. This workshop teaches that operational skill set.
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
 <div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
-<strong style="font-size:21px">Demo-driven shipping</strong><br>
+<strong style="font-size:21px"><i class="fa-solid fa-play" style="color:var(--bt-orange);margin-right:6px;font-size:16px"></i>Demo-driven shipping</strong><br>
 <span style="font-size:17px;color:var(--bt-gray)">Launching after 3-5 impressive demos without systematic testing</span>
 </div>
 <div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
-<strong style="font-size:21px">Monolithic prompts</strong><br>
+<strong style="font-size:21px"><i class="fa-solid fa-cube" style="color:var(--bt-orange);margin-right:6px;font-size:16px"></i>Monolithic prompts</strong><br>
 <span style="font-size:17px;color:var(--bt-gray)">One giant prompt handling classification, policy, and response</span>
 </div>
 <div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
-<strong style="font-size:21px">Logs as observability</strong><br>
+<strong style="font-size:21px"><i class="fa-solid fa-scroll" style="color:var(--bt-orange);margin-right:6px;font-size:16px"></i>Logs as observability</strong><br>
 <span style="font-size:17px;color:var(--bt-gray)">Treating raw logs as sufficient insight into model behavior</span>
 </div>
 <div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
-<strong style="font-size:21px">Fix without coverage</strong><br>
+<strong style="font-size:21px"><i class="fa-solid fa-band-aid" style="color:var(--bt-orange);margin-right:6px;font-size:16px"></i>Fix without coverage</strong><br>
 <span style="font-size:17px;color:var(--bt-gray)">Patching failures without adding eval cases to prevent regression</span>
 </div>
 <div style="background:#fff;border-left:4px solid var(--bt-orange);padding:10px 16px;border-radius:6px;line-height:1.25">
-<strong style="font-size:21px">Blind LLM judging</strong><br>
+<strong style="font-size:21px"><i class="fa-solid fa-eye-slash" style="color:var(--bt-orange);margin-right:6px;font-size:16px"></i>Blind LLM judging</strong><br>
 <span style="font-size:17px;color:var(--bt-gray)">Running LLM judges on everything without a cost strategy</span>
 </div>
 </div>
@@ -458,23 +548,23 @@ each of these directly.
 
 <div style="display:flex;flex-direction:column;justify-content:center;flex:1;margin-top:-10px;padding-bottom:80px">
 <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:stretch;gap:0 10px">
-<div style="background:rgba(255,128,0,0.12);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
-<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px">&#9654;</div>
+<div style="background:rgba(255,128,0,0.12);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px"><i class="fa-solid fa-play"></i></div>
 <span style="font-size:20px;color:var(--bt-gray)">Getting a demo to work</span>
 </div>
-<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center">&#10132;</span>
-<div style="background:rgba(255,128,0,0.25);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
-<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px">&#9678;</div>
+<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center"><i class="fa-solid fa-arrow-right"></i></span>
+<div style="background:rgba(255,128,0,0.25);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px"><i class="fa-solid fa-circle-check"></i></div>
 <span style="font-size:20px;color:var(--bt-gray)">Knowing whether it is reliable</span>
 </div>
-<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center">&#10132;</span>
-<div style="background:rgba(255,128,0,0.45);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
-<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px">&#9651;</div>
+<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center"><i class="fa-solid fa-arrow-right"></i></span>
+<div style="background:rgba(255,128,0,0.45);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+<div style="font-size:36px;color:var(--bt-orange);margin-bottom:6px"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
 <span style="font-size:20px">Knowing what changed when quality drops</span>
 </div>
-<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center">&#10132;</span>
-<div style="background:var(--bt-orange);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
-<div style="font-size:36px;color:#fff;margin-bottom:6px">&#10227;</div>
+<span style="font-size:32px;color:var(--bt-orange);display:flex;align-items:center"><i class="fa-solid fa-arrow-right"></i></span>
+<div style="background:var(--bt-orange);padding:20px 16px;border-radius:6px;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start">
+<div style="font-size:36px;color:#fff;margin-bottom:6px"><i class="fa-solid fa-arrows-rotate"></i></div>
 <span style="font-size:20px;color:#fff">Improving it systematically</span>
 </div>
 </div>
@@ -522,62 +612,40 @@ Every row maps to a specific section we will build together.
 
 ## What you will learn
 
-By the end of this workshop, you will be able to:
+<div style="display:flex;flex-direction:column;gap:0;margin-top:4px">
+<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #ddd">
+<i class="fa-solid fa-robot" style="font-size:22px;color:var(--bt-teal)"></i>
+<span style="font-size:21px">Build a <strong>tool-using agent</strong> and refactor it into a staged AI workflow</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #ddd">
+<i class="fa-solid fa-magnifying-glass" style="font-size:22px;color:var(--bt-teal)"></i>
+<span style="font-size:21px">Instrument it with <strong>Braintrust tracing</strong> for full execution visibility</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #ddd">
+<i class="fa-solid fa-database" style="font-size:22px;color:var(--bt-teal)"></i>
+<span style="font-size:21px">Create an <strong>eval dataset</strong> with representative cases and scorers</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #ddd">
+<i class="fa-solid fa-cube" style="font-size:22px;color:var(--bt-teal)"></i>
+<span style="font-size:21px">Move prompts and tools into <strong>Braintrust managed objects</strong></span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #ddd">
+<i class="fa-solid fa-bug" style="font-size:22px;color:var(--bt-teal)"></i>
+<span style="font-size:21px">Inspect failed traces and <strong>isolate which stage broke</strong></span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 0">
+<i class="fa-solid fa-flask-vial" style="font-size:22px;color:var(--bt-teal)"></i>
+<span style="font-size:21px">Convert production failures into <strong>future regression tests</strong></span>
+</div>
+</div>
 
-- Build a **tool-using agent** and refactor it into a staged AI workflow
-- Instrument it with **Braintrust tracing** for full execution visibility
-- Create an **eval dataset** with representative cases and scorers
-- Move prompts and tools into **Braintrust managed objects**
-- Inspect failed traces and **isolate which stage broke**
-- Convert production failures into **future regression tests**
-
-You will leave with a working reference app and a repeatable mental model for shipping AI features with confidence.
-
-More importantly, you will leave with **the repeatable workflow for turning AI failures into systematic quality improvements**.
+<div style="background:var(--bt-indigo);color:#fff;padding:14px 24px;border-radius:8px;font-size:20px;font-weight:600;text-align:center;position:absolute;bottom:60px;left:40px;right:40px">
+You will leave with the repeatable workflow for turning AI failures into systematic quality improvements.
+</div>
 
 <!--
 Speaker notes: These are the concrete skills. The tools matter, but the
 mental model is what you take with you: observe, measure, improve, test.
--->
-
----
-
-## Who this workshop is for
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px">
-
-<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
-<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px">&lt;/&gt; ENGINEER</div>
-<div style="font-weight:600;font-size:22px;margin-bottom:4px">AI / product engineers</div>
-<div style="font-size:18px;color:var(--bt-gray)">Building LLM-powered features and shipping them to production</div>
-</div>
-
-<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
-<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px">&#x25B2; APPLIED AI</div>
-<div style="font-weight:600;font-size:22px;margin-bottom:4px">Applied AI teams</div>
-<div style="font-size:18px;color:var(--bt-gray)">Moving prototypes to production with repeatable quality</div>
-</div>
-
-<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
-<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px">&#x2692; PLATFORM</div>
-<div style="font-weight:600;font-size:22px;margin-bottom:4px">Platform / infra teams</div>
-<div style="font-size:18px;color:var(--bt-gray)">Supporting LLM applications at scale across the org</div>
-</div>
-
-<div style="background:#fff;border:1px solid var(--bt-bg-alt);border-top:3px solid var(--bt-indigo);border-radius:6px;padding:18px 20px">
-<div style="font-family:'Geist Mono',monospace;font-weight:600;font-size:13px;color:var(--bt-teal);margin-bottom:6px">&#x25C8; LEADERSHIP</div>
-<div style="font-weight:600;font-size:22px;margin-bottom:4px">Technical product leaders</div>
-<div style="font-size:18px;color:var(--bt-gray)">Responsible for AI reliability and production quality</div>
-</div>
-
-</div>
-
-<div style="text-align:center;color:var(--bt-gray);font-style:italic;margin-top:12px;font-size:20px">Especially useful if you already have a prototype and need to make it trustworthy.</div>
-
-<!--
-Speaker notes: Quick self-orientation. Most people in the room will
-fall into one of these categories. The techniques apply whether you
-are building agents, RAG systems, or any LLM-powered workflow.
 -->
 
 ---
@@ -590,32 +658,32 @@ It sits between your application and your models - where data, observability, an
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px">
 
 <div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
-<div style="font-weight:600;font-size:20px;margin-bottom:4px">Data</div>
+<div style="font-weight:600;font-size:20px;margin-bottom:4px"><i class="fa-solid fa-database" style="color:var(--bt-indigo);margin-right:6px;font-size:16px"></i>Data</div>
 <div style="font-size:16px;color:var(--bt-gray)">Turning traces and outputs into structured evaluation datasets</div>
 </div>
 
 <div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
-<div style="font-weight:600;font-size:20px;margin-bottom:4px">Observability</div>
+<div style="font-weight:600;font-size:20px;margin-bottom:4px"><i class="fa-solid fa-eye" style="color:var(--bt-indigo);margin-right:6px;font-size:16px"></i>Observability</div>
 <div style="font-size:16px;color:var(--bt-gray)">Understanding model behavior in production</div>
 </div>
 
 <div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
-<div style="font-weight:600;font-size:20px;margin-bottom:4px">Evals</div>
+<div style="font-weight:600;font-size:20px;margin-bottom:4px"><i class="fa-solid fa-clipboard-check" style="color:var(--bt-indigo);margin-right:6px;font-size:16px"></i>Evals</div>
 <div style="font-size:16px;color:var(--bt-gray)">Defining what "good" means and measuring against it</div>
 </div>
 
 <div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
-<div style="font-weight:600;font-size:20px;margin-bottom:4px">Iteration</div>
+<div style="font-weight:600;font-size:20px;margin-bottom:4px"><i class="fa-solid fa-arrows-rotate" style="color:var(--bt-indigo);margin-right:6px;font-size:16px"></i>Iteration</div>
 <div style="font-size:16px;color:var(--bt-gray)">Comparing prompts, models, and versions to improve quality</div>
 </div>
 
 <div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
-<div style="font-weight:600;font-size:20px;margin-bottom:4px">Quality gates</div>
+<div style="font-weight:600;font-size:20px;margin-bottom:4px"><i class="fa-solid fa-shield-halved" style="color:var(--bt-indigo);margin-right:6px;font-size:16px"></i>Quality gates</div>
 <div style="font-size:16px;color:var(--bt-gray)">Automated checks that prevent regressions from reaching production</div>
 </div>
 
 <div style="background:#fff;border:1px solid var(--bt-bg-alt);border-left:3px solid var(--bt-indigo);border-radius:4px;padding:14px 16px">
-<div style="font-weight:600;font-size:20px;margin-bottom:4px">Workflow acceleration</div>
+<div style="font-weight:600;font-size:20px;margin-bottom:4px"><i class="fa-solid fa-bolt" style="color:var(--bt-indigo);margin-right:6px;font-size:16px"></i>Workflow acceleration</div>
 <div style="font-size:16px;color:var(--bt-gray)">AI-powered tools that speed up the entire development cycle</div>
 </div>
 
@@ -642,15 +710,15 @@ deployment.
 </div>
 <div style="flex:1;font-size:22px">
 
-**Trace** → see what happened in production
+<i class="fa-solid fa-binoculars" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Trace** → see what happened in production
 
-**Dataset** → capture cases (seed + production failures)
+<i class="fa-solid fa-folder-open" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Dataset** → capture cases (seed + production failures)
 
-**Eval** → measure quality systematically
+<i class="fa-solid fa-chart-column" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Eval** → measure quality systematically
 
-**Improve** → fix prompts, logic, tools
+<i class="fa-solid fa-wrench" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Improve** → fix prompts, logic, tools
 
-**Test** → confirm the fix, check for regressions
+<i class="fa-solid fa-check-double" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Test** → confirm the fix, check for regressions
 
 </div>
 </div>
@@ -667,23 +735,47 @@ compounds -- the more you use it, the more coverage you have.
 
 ---
 
-## Agenda
+<!-- _class: divider -->
 
-| Part | Focus | Time |
-|------|-------|------|
-| **1. Build the Agent** | Scaffold → tools → 5-stage agent workflow | ~20 min |
-| **2. Observe** | Add Braintrust tracing | ~10 min |
-| **3. Evaluate** | Dataset, scorers, offline evals | ~15 min |
-| **4. Deploy & Manage** | Managed prompts, tools, online scoring | ~25 min |
-| **5. Remediate** | Production failure → fix → regression test | ~15 min |
-| **Wrap up** | Summary, key takeaways, next steps, Q&A | ~15 min |
+# Part 0: Setup
 
-Each part ends with a **code-along checkpoint** - if you fall behind, check out the next git branch.
+## Environment, agent intro, and architecture
 
 <!--
-Speaker notes: This is the running order. We will alternate between slides
-and live coding. Each part builds on the previous one. The total is around
-110 minutes with natural break points between parts.
+Speaker notes: Before we start building, let's make sure everyone is set up
+and walk through the agent we will be building and its architecture.
+-->
+
+---
+
+## Getting started
+
+**Environment:** macOS, Linux, or WSL on Windows
+
+**Accounts & API keys:**
+- [Braintrust](https://www.braintrust.dev/signup) - Sign-up for free
+- [OpenAI Platform API key](https://platform.openai.com/api-keys)
+- *Optional:* AI coding assistant (Claude Code, Codex, Cursor, Copilot, etc)
+
+**Tooling:** `mise` + `make` (recommended), or **Node.js v22** + **pnpm v10.28.2**
+
+**Workshop repo:** Scan or clone:
+
+```sh
+git clone https://github.com/braintrustdata/shipping-quality-ai-applications-workshop.git
+```
+
+<div style="text-align:center">
+
+![w:140](assets/qr-workshop-repo.svg)
+
+</div>
+
+<!--
+Speaker notes: Let's get set up first. Scan the QR code or clone the repo now.
+The README has full instructions. mise trust && mise install && make setup gets
+you from zero to running. If you prefer not to use mise, Node 22 and pnpm
+are the only hard requirements. Get this running while we cover the intro.
 -->
 
 ---
@@ -1543,7 +1635,7 @@ build → observe → evaluate → deploy → remediate → repeat
 <div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
 <span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">01</span>
-<span style="font-size:24px;color:var(--bt-orange)">&#8800;</span>
+<span style="font-size:24px;color:var(--bt-orange)"><i class="fa-solid fa-not-equal"></i></span>
 </div>
 <strong style="font-size:19px">Prototype ≠ production</strong><br>
 <span style="font-size:16px;color:var(--bt-gray)">A working demo is not evidence of reliability</span>
@@ -1551,7 +1643,7 @@ build → observe → evaluate → deploy → remediate → repeat
 <div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
 <span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">02</span>
-<span style="font-size:24px;color:var(--bt-orange)">&#9638;</span>
+<span style="font-size:24px;color:var(--bt-orange)"><i class="fa-solid fa-layer-group"></i></span>
 </div>
 <strong style="font-size:19px">Explicit stages</strong><br>
 <span style="font-size:16px;color:var(--bt-gray)">Separate responsibilities make failures debuggable</span>
@@ -1559,7 +1651,7 @@ build → observe → evaluate → deploy → remediate → repeat
 <div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
 <span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">03</span>
-<span style="font-size:24px;color:var(--bt-orange)">&#9678;</span>
+<span style="font-size:24px;color:var(--bt-orange)"><i class="fa-solid fa-binoculars"></i></span>
 </div>
 <strong style="font-size:19px">Observability is not optional</strong><br>
 <span style="font-size:16px;color:var(--bt-gray)">Traces show what happened. Evals measure what matters.</span>
@@ -1569,7 +1661,7 @@ build → observe → evaluate → deploy → remediate → repeat
 <div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
 <span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">04</span>
-<span style="font-size:24px;color:var(--bt-orange)">&#9652;</span>
+<span style="font-size:24px;color:var(--bt-orange)"><i class="fa-solid fa-seedling"></i></span>
 </div>
 <strong style="font-size:19px">Failures are eval seeds</strong><br>
 <span style="font-size:16px;color:var(--bt-gray)">Do not wait for a perfect dataset before starting</span>
@@ -1577,7 +1669,7 @@ build → observe → evaluate → deploy → remediate → repeat
 <div style="background:#fff;border-top:4px solid var(--bt-indigo);padding:14px 16px;border-radius:6px;line-height:1.25">
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
 <span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace">05</span>
-<span style="font-size:24px;color:var(--bt-orange)">&#10227;</span>
+<span style="font-size:24px;color:var(--bt-orange)"><i class="fa-solid fa-infinity"></i></span>
 </div>
 <strong style="font-size:19px">The feedback loop compounds</strong><br>
 <span style="font-size:16px;color:var(--bt-gray)">Observe → Measure → Improve → Test → Repeat</span>
