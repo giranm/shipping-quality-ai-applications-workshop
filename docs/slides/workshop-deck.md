@@ -782,7 +782,7 @@ are the only hard requirements. Get this running while we cover the intro.
 
 ## Helpr: Support triage agent
 
-Helpr is a **fictional** support triage agent built for this workshop.
+Helpr is a **fictional** support triage agent built for this workshop.  
 It is designed to teach production AI patterns - not as a production-ready application.
 
 Given a support ticket, it produces:
