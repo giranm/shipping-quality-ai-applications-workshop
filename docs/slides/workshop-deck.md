@@ -1,7 +1,7 @@
 ---
 marp: true
 theme: default
-paginate: true
+paginate: false
 size: 16:9
 footer: Confidential
 transition: fade 0.3s
@@ -336,9 +336,9 @@ style: |
 <!--
 Speaker notes: Welcome everyone. Over the next ~110 minutes we are going to build
 a support triage agent from scratch, then instrument it with tracing, evals,
-managed prompts, and a production failure remediation loop. By the end you will
+managed prompts, and an edge-case remediation loop. By the end you will
 have a working reference app and a repeatable mental model for shipping AI
-features with confidence.
+features with assurance.
 -->
 
 ---
@@ -387,7 +387,7 @@ features with confidence.
 </tr>
 <tr style="border-bottom:2px solid var(--bt-indigo)">
 <td style="padding:10px 12px">5. Remediate</td>
-<td style="padding:10px 12px">Production failure → fix → regression test</td>
+<td style="padding:10px 12px">Edge case → fix → regression test</td>
 <td style="padding:10px 12px;text-align:right">~15 min</td>
 </tr>
 <tr>
@@ -585,7 +585,7 @@ The feedback loop we build today is what lets an AI feature survive production.
 Speaker notes: Frame the workshop. Most teams stop at the prototype.
 A working demo is not evidence of reliability. This workshop covers
 everything after that first demo moment - tracing, evaluation,
-managed deployment, and failure remediation.
+managed deployment, and edge-case remediation.
 -->
 
 ---
@@ -635,12 +635,12 @@ Every row maps to a specific section we will build together.
 </div>
 <div style="display:flex;align-items:center;gap:14px;padding:12px 0">
 <i class="fa-solid fa-flask-vial" style="font-size:22px;color:var(--bt-teal)"></i>
-<span style="font-size:21px">Convert production failures into <strong>future regression tests</strong></span>
+<span style="font-size:21px">Turn <strong>edge cases</strong> into <strong>regression tests</strong> that build assurance over time</span>
 </div>
 </div>
 
 <div style="background:var(--bt-indigo);color:#fff;padding:14px 24px;border-radius:8px;font-size:20px;font-weight:600;text-align:center;position:absolute;bottom:60px;left:40px;right:40px">
-You will leave with the repeatable workflow for turning AI failures into systematic quality improvements.
+You will leave with a repeatable workflow for building assurance into your AI systems — observe each stage, measure what matters, improve systematically.
 </div>
 
 <!--
@@ -712,7 +712,7 @@ deployment.
 
 <i class="fa-solid fa-binoculars" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Trace** → see what happened in production
 
-<i class="fa-solid fa-folder-open" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Dataset** → capture cases (seed + production failures)
+<i class="fa-solid fa-folder-open" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Dataset** → capture cases (seed + real-world edge cases)
 
 <i class="fa-solid fa-chart-column" style="color:var(--bt-indigo);width:24px;font-size:16px"></i> **Eval** → measure quality systematically
 
@@ -762,7 +762,7 @@ and walk through the agent we will be building and its architecture.
 **Workshop repo:** Scan or clone:
 
 ```sh
-git clone https://github.com/braintrustdata/shipping-quality-ai-applications-workshop.git
+git clone https://github.com/giranm/shipping-quality-ai-applications-workshop.git
 ```
 
 <div style="text-align:center">
@@ -782,7 +782,10 @@ are the only hard requirements. Get this running while we cover the intro.
 
 ## Helpr: Support triage agent
 
-A fictional B2B SaaS agent that receives a support ticket and produces:
+Helpr is a **fictional** support triage agent built for this workshop.
+It is designed to teach production AI patterns - not as a production-ready application.
+
+Given a support ticket, it produces:
 
 | Field | Example |
 |-------|---------|
@@ -795,10 +798,14 @@ A fictional B2B SaaS agent that receives a support ticket and produces:
 | `confidence` | `0.86` |
 
 <!--
-Speaker notes: This is the structured result the agent produces.
-Every field matters -- category and severity for routing, escalation
-for the ops team, customer reply for the end user, confidence for
-downstream automation thresholds.
+Speaker notes: Helpr is purely educational -- it exists to give us a
+realistic enough domain to demonstrate production AI patterns without
+requiring specialised knowledge. Support triage is relatable: everyone
+has filed a ticket. The structured output covers classification,
+escalation logic, customer-facing text, and a confidence score -- just
+enough complexity to exercise tracing, evals, managed prompts, and
+remediation. Emphasise that nobody should ship this as-is; the value
+is the workflow, not the app.
 -->
 
 ---
@@ -1680,13 +1687,13 @@ build → observe → evaluate → deploy → remediate → repeat
 <!--
 Speaker notes: These five points are the workshop in summary. The
 tools are important, but the mental model is what you take with you.
-If you remember one thing: production failures are not bugs to fix
-and forget -- they are the seed data for your next eval improvement.
+If you remember one thing: edge cases are not bugs to fix
+and forget -- they are the seed data for building lasting assurance.
 -->
 
 ---
 
-## How to apply this with your team next week
+## How to apply this with your team
 
 <div style="position:relative;display:flex;flex-direction:column;justify-content:space-between;flex:1;padding-bottom:90px">
 <div style="position:absolute;left:21px;top:28px;bottom:120px;width:2px;background:var(--bt-indigo);opacity:0.25"></div>
@@ -1704,7 +1711,7 @@ and forget -- they are the seed data for your next eval improvement.
 </div>
 <div style="display:grid;grid-template-columns:44px 1fr;gap:0 16px">
 <span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;text-align:center;line-height:1;background:var(--bt-bg);position:relative;z-index:1;padding:4px 0">3</span>
-<strong style="font-size:22px;line-height:1;padding-top:6px">Collect 10-20 real failures</strong>
+<strong style="font-size:22px;line-height:1;padding-top:6px">Collect 10-20 real edge cases</strong>
 <span></span>
 <span style="font-size:17px;color:var(--bt-gray);margin-top:2px">Or risky edge cases</span>
 </div>
@@ -1716,7 +1723,7 @@ and forget -- they are the seed data for your next eval improvement.
 </div>
 <div style="display:grid;grid-template-columns:44px 1fr;gap:0 16px">
 <span style="font-size:28px;font-weight:700;color:var(--bt-indigo);font-family:'Geist Mono',monospace;text-align:center;line-height:1;background:var(--bt-bg);position:relative;z-index:1;padding:4px 0">5</span>
-<strong style="font-size:22px;line-height:1;padding-top:6px">Route every production failure back</strong>
+<strong style="font-size:22px;line-height:1;padding-top:6px">Route every edge case back</strong>
 <span></span>
 <span style="font-size:17px;color:var(--bt-gray);margin-top:2px">Into the dataset</span>
 </div>
@@ -1744,7 +1751,7 @@ Take the feedback loop back to your team.<br>Start tracing, evaluating, and impr
 
 - [Braintrust Documentation](https://www.braintrust.dev/docs) - guides for tracing, evals, prompts, and tools
 - [Braintrust Cookbook](https://www.braintrust.dev/docs/cookbook) - real-world examples and recipes
-- [Workshop Repo](https://github.com/braintrustdata/shipping-quality-ai-applications-workshop) - your reference implementation with all 11 checkpoints
+- [Workshop Repo](https://github.com/giranm/shipping-quality-ai-applications-workshop) - your reference implementation with all 11 checkpoints
 
 **Next steps**
 
