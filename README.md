@@ -10,6 +10,10 @@ The repo demonstrates the operational loop around a staged AI workflow:
 - move prompt logic into Braintrust-managed prompts
 - turn production-style failures into regression cases
 
+## Recording
+
+[![Workshop Recording](https://img.youtube.com/vi/ZdheJTfLu-s/0.jpg)](https://youtu.be/ZdheJTfLu-s?si=eTxXW6ffk7r1p-2f)
+
 ## Prerequisites
 
 - `mise`
@@ -73,7 +77,7 @@ Runtime-mode behavior:
 
 - `RUNTIME_MODE=local`: every stage uses local prompt builders and local tool behavior in code.
 - `RUNTIME_MODE=managed`: model stages use the repo-owned Braintrust prompt slugs, managed tools, and managed parameter loading in the configured project.
-- `make setup-braintrust` creates the Braintrust project if needed and bootstraps the baseline prompt slugs, managed tools, managed parameter object, remote scorers, and online scoring rules used by the app.
+- `make setup-braintrust` creates the Braintrust project if needed and bootstraps the baseline prompt slugs, managed tools, managed parameter object, remote scorers, and online scoring rules used by the workshop.
 - Managed mode fails fast if the required prompt slugs do not exist in the configured Braintrust project.
 - Braintrust bootstrap is idempotent by default. Use `BRAINTRUST_IF_EXISTS=replace make setup-braintrust` when you explicitly want to refresh the remote prompts, scorers, and online rules from code.
 - `helpr-runtime-config` is the managed runtime parameter object. Its active value is treated as UI-owned by default.
